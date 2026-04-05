@@ -1,0 +1,116 @@
+# ═══════════════════════════════════════════════════════════════
+#  UGRP — .gitignore
+#  Place this file at the root:  UGRP/.gitignore
+# ═══════════════════════════════════════════════════════════════
+
+
+# ─── Python / Django ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+
+# Virtual environment
+venv/
+env/
+.env/
+.venv/
+
+# Django secrets & local config
+*.env
+.env
+.env.*
+!.env.example
+
+# Django database (never commit — each environment has its own)
+*.sqlite3
+db.sqlite3
+
+# Django collected static files
+staticfiles/
+static_root/
+
+# Django media uploads (user files — stored on Cloudinary in production)
+media/
+
+# Django migrations — KEEP these, they must be committed
+# (do NOT add migrations/ here)
+
+# Django cache
+.cache/
+
+
+# ─── Node / React / Vite ─────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+
+# Local env files (Vite)
+frontend/.env.local
+frontend/.env.*.local
+
+# Keep these — they are safe to commit
+# frontend/.env.development  ← commit (no secrets, just localhost URL)
+# frontend/.env.production   ← commit (just your Render URL, no secrets)
+
+
+# ─── Secrets — NEVER commit these ────────────────────────────────────────────
+# Django SECRET_KEY, Gmail passwords, Cloudinary keys etc.
+# These must live in Render environment variables only.
+secrets.py
+local_settings.py
+*_secret.py
+
+
+# ─── OS files ─────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ─── IDE / editor ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+.project
+.classpath
+
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# ─── Test / coverage ─────────────────────────────────────────────────────────
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.pytest_cache/
+.tox/
+
+
+# ─── Misc ────────────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.temp
+.sass-cache/
