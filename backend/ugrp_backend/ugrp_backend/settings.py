@@ -225,10 +225,10 @@ if os.environ.get('RENDER'):
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ['duvpmpsdn'],
-        'API_KEY':    os.environ['425384179826374'],
-        'API_SECRET': os.environ['rAdghPXhZzuDdBr84xPTtXwpjnA'],
-    }
+    'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
+    'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
+    'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
+}
 
     # CORS — allow your Vercel frontend
     CORS_ALLOWED_ORIGINS = [
