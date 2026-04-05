@@ -200,7 +200,7 @@ CONTACT_RECIPIENT_EMAILS = [
 CONTACT_FROM_NAME = 'UGRP Contact Form'
 
 # ── Production settings (Render) ─────────────────────────────────────────────
-if os.environ.get('RENDER'):
+if os.environ.get('ugrp-backend'):
 
     DEBUG = False
 
