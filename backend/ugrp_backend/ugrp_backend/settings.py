@@ -200,38 +200,38 @@ CONTACT_RECIPIENT_EMAILS = [
 CONTACT_FROM_NAME = 'UGRP Contact Form'
 
 # ── Production settings (Render) ─────────────────────────────────────────────
-# if os.environ.get('ugrp-backend'):
+if 'RENDER' in os.environ:
 
-DEBUG = False
+    DEBUG = False
 
-SECRET_KEY = os.environ['SECRET_KEY']
+    SECRET_KEY = os.environ['SECRET_KEY']
 
-ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')]
+    ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')]
 
-# PostgreSQL (Render provides DATABASE_URL automatically)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ['DATABASE_URL'],
-        conn_max_age=600,
-    )
+    # PostgreSQL (Render provides DATABASE_URL automatically)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ['DATABASE_URL'],
+            conn_max_age=600,
+        )
+    }
+
+    # WhiteNoise — serves static files from Django itself
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+    # Cloudinary — media file storage (images, resume uploads)
+    INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
+    'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
+    'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
 }
 
-# WhiteNoise — serves static files from Django itself
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Cloudinary — media file storage (images, resume uploads)
-INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
-'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
-'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
-}
-
-# CORS — allow your Vercel frontend
-CORS_ALLOWED_ORIGINS = [
-    os.environ.get('FRONTEND_URL', ''),
-]
-CORS_ALLOW_ALL_ORIGINS = False
+    # CORS — allow your Vercel frontend
+    CORS_ALLOWED_ORIGINS = [
+        os.environ.get('FRONTEND_URL', ''),
+    ]
+    CORS_ALLOW_ALL_ORIGINS = False
