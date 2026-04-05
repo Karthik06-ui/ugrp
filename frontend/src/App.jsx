@@ -40,7 +40,7 @@ import PostRemarks      from './pages/mentor/PostRemarks'
 //Header Pages
 import AboutPage        from './pages/public/AboutPage'
 import ContactPage      from './pages/public/ContactPage'
-import BlogDetailPage   from './pages/public/BlogdetailPage'
+import BlogDetailPage   from './pages/public/BlogDetailPage'
 import BlogsPage        from './pages/public/BlogsPage'
 import ExploreUsPage    from './pages/public/ExploreUsPage'
 import PeoplePage       from './pages/public/PeoplePage'
