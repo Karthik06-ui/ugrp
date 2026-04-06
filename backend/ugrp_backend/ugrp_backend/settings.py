@@ -48,20 +48,12 @@ INSTALLED_APPS = [
     'proposals.apps.ProposalsConfig',
     'dashboard.apps.DashboardConfig',
     'blog.apps.BlogConfig',
-    
+
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
 ]
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.TokenAuthentication',
-#     ),
-#     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-# }
 
 # ─── Django REST Framework ───────────────────────────────────────────────────
 REST_FRAMEWORK = {
@@ -176,30 +168,24 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ─── Email (contact form) ─────────────────────────────────────────────────────
-# Using Gmail SMTP — replace with your credentials or any SMTP provider.
-# For Gmail: enable 2FA and create an App Password at
-#   https://myaccount.google.com/apppasswords
-EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST          = 'smtp.gmail.com'
-EMAIL_PORT          = 587
-EMAIL_USE_TLS       = True
- 
-# ── Replace these two values with your Gmail credentials ─────────────────────
-EMAIL_HOST_USER     = 'karthisundarakumar@gmail.com'       # Gmail address used to SEND
-EMAIL_HOST_PASSWORD = 'xzga ygug vfgb lxem'     # Gmail App Password (16 chars, NOT your login password)
- 
-# ── Who receives the contact form messages ────────────────────────────────────
-# Add as many addresses as you need
+# ─── Email — Resend API (contact form) ───────────────────────────────────────
+# Render free plan blocks SMTP ports (587/465/25).
+# Resend sends over HTTPS (port 443) which is always open.
+# Sign up free at https://resend.com → API Keys → Create API Key
+# Then add RESEND_API_KEY to your Render environment variables.
+
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+
+# Who receives the contact form messages
 CONTACT_RECIPIENT_EMAILS = [
     'kannarashi760@gmail.com',
     'r.vigneshwaran20078@gmail.com',
 ]
- 
-# The "From" name shown in the inbox
-CONTACT_FROM_NAME = 'UGRP Contact Form'
 
-# ── Production settings (Render) ─────────────────────────────────────────────
+# From address — use onboarding@resend.dev until you verify your own domain
+CONTACT_FROM_EMAIL = 'onboarding@resend.dev'
+
+# ─── Production settings (Render) ────────────────────────────────────────────
 if 'RENDER' in os.environ:
 
     DEBUG = False
@@ -225,10 +211,10 @@ if 'RENDER' in os.environ:
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
-    'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
-    'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
-}
+        'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
+        'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
+        'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
+    }
 
     # CORS — allow your Vercel frontend
     CORS_ALLOWED_ORIGINS = [

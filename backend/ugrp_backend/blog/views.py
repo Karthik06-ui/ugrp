@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
@@ -11,7 +10,6 @@ from rest_framework.views import APIView
 
 from .models import Blog
 from .serializers import BlogListSerializer, BlogDetailSerializer, BlogCreateSerializer
-
 
 class BlogListView(generics.ListAPIView):
     """GET /api/blogs/ — public"""
@@ -55,10 +53,8 @@ class BlogCreateView(generics.CreateAPIView):
 class ContactFormView(APIView):
     """
     POST /api/contact/
-    Public — forwards the contact form submission to CONTACT_RECIPIENT_EMAILS
-    via SMTP. Nothing is stored in the database.
-
-    Payload: { name, email, topic, message }
+    Public — sends contact form via Resend API (HTTPS, not SMTP).
+    Render free plan blocks SMTP ports — Resend uses port 443 which is always open.
     """
     permission_classes = [AllowAny]
 
@@ -69,7 +65,7 @@ class ContactFormView(APIView):
         topic   = str(data.get('topic',   '')).strip()
         message = str(data.get('message', '')).strip()
 
-        # ── Basic validation ─────────────────────────────────────────────────
+        # ── Validation ───────────────────────────────────────────────────────
         errors = {}
         if not name:
             errors['name'] = 'Name is required.'
@@ -85,44 +81,55 @@ class ContactFormView(APIView):
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # ── Build the email ──────────────────────────────────────────────────
-        subject = f'[UGRP Contact] {topic or "General enquiry"} — from {name}'
-
-        body = f"""
-New contact form submission from the UGRP website.
-
-───────────────────────────────────────
-Name    : {name}
-Email   : {email}
-Topic   : {topic or '—'}
-───────────────────────────────────────
-
-{message}
-
-───────────────────────────────────────
-Reply directly to {email} to respond.
-        """.strip()
-
+        # ── Send via Resend API ───────────────────────────────────────────────
+        api_key    = getattr(settings, 'RESEND_API_KEY', '')
         recipients = getattr(settings, 'CONTACT_RECIPIENT_EMAILS', [])
-        from_name  = getattr(settings, 'CONTACT_FROM_NAME', 'UGRP Contact Form')
-        from_email = f'{from_name} <{settings.EMAIL_HOST_USER}>'
+        from_email = getattr(settings, 'CONTACT_FROM_EMAIL', 'onboarding@resend.dev')
 
-        if not recipients:
+        if not api_key:
             return Response(
-                {'detail': 'Contact email is not configured on the server.'},
+                {'detail': 'Email service is not configured on the server.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        try:
-            send_mail(
-                subject      = subject,
-                message      = body,
-                from_email   = from_email,
-                recipient_list = recipients,
-                fail_silently  = False,
-                # Reply-To so you can reply directly to the sender
-                # headers      = {'Reply-To': f'{name} <{email}>'},
+        if not recipients:
+            return Response(
+                {'detail': 'No recipient email configured on the server.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+        html_body = f"""
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #534AB7;">New UGRP Contact Message</h2>
+            <table style="width:100%; border-collapse: collapse;">
+                <tr><td style="padding:8px; color:#666; width:120px;">Name</td>
+                    <td style="padding:8px; font-weight:600;">{name}</td></tr>
+                <tr style="background:#f9f9f9;">
+                    <td style="padding:8px; color:#666;">Email</td>
+                    <td style="padding:8px;"><a href="mailto:{email}">{email}</a></td></tr>
+                <tr><td style="padding:8px; color:#666;">Topic</td>
+                    <td style="padding:8px;">{topic or '—'}</td></tr>
+            </table>
+            <div style="margin-top:20px; padding:16px; background:#f5f5f5; border-radius:8px;">
+                <p style="margin:0; white-space:pre-wrap; color:#333;">{message}</p>
+            </div>
+            <p style="margin-top:16px; color:#999; font-size:12px;">
+                Reply directly to <a href="mailto:{email}">{email}</a> to respond.
+            </p>
+        </div>
+        """
+
+        try:
+            import resend
+            resend.api_key = api_key
+
+            resend.Emails.send({
+                'from':     from_email,
+                'to':       recipients,
+                'reply_to': email,
+                'subject':  f'[UGRP Contact] {topic or "General enquiry"} — from {name}',
+                'html':     html_body,
+            })
         except Exception as exc:
             return Response(
                 {'detail': f'Failed to send email: {str(exc)}'},
