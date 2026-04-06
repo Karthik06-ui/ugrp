@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
+import requests
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -10,6 +12,7 @@ from rest_framework.views import APIView
 
 from .models import Blog
 from .serializers import BlogListSerializer, BlogDetailSerializer, BlogCreateSerializer
+
 
 class BlogListView(generics.ListAPIView):
     """GET /api/blogs/ — public"""
@@ -53,8 +56,8 @@ class BlogCreateView(generics.CreateAPIView):
 class ContactFormView(APIView):
     """
     POST /api/contact/
-    Public — sends contact form via Resend API (HTTPS, not SMTP).
-    Render free plan blocks SMTP ports — Resend uses port 443 which is always open.
+    Calls the Resend REST API directly via requests (no resend package needed).
+    Works on Render free plan — uses HTTPS port 443, not SMTP.
     """
     permission_classes = [AllowAny]
 
@@ -81,14 +84,14 @@ class ContactFormView(APIView):
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # ── Send via Resend API ───────────────────────────────────────────────
+        # ── Config ───────────────────────────────────────────────────────────
         api_key    = getattr(settings, 'RESEND_API_KEY', '')
         recipients = getattr(settings, 'CONTACT_RECIPIENT_EMAILS', [])
         from_email = getattr(settings, 'CONTACT_FROM_EMAIL', 'onboarding@resend.dev')
 
         if not api_key:
             return Response(
-                {'detail': 'Email service is not configured on the server.'},
+                {'detail': 'Email service is not configured (missing RESEND_API_KEY).'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -98,38 +101,69 @@ class ContactFormView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+        # ── HTML email body ───────────────────────────────────────────────────
         html_body = f"""
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #534AB7;">New UGRP Contact Message</h2>
-            <table style="width:100%; border-collapse: collapse;">
-                <tr><td style="padding:8px; color:#666; width:120px;">Name</td>
-                    <td style="padding:8px; font-weight:600;">{name}</td></tr>
-                <tr style="background:#f9f9f9;">
-                    <td style="padding:8px; color:#666;">Email</td>
-                    <td style="padding:8px;"><a href="mailto:{email}">{email}</a></td></tr>
-                <tr><td style="padding:8px; color:#666;">Topic</td>
-                    <td style="padding:8px;">{topic or '—'}</td></tr>
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
+            <h2 style="color:#534AB7;margin-bottom:20px;">New UGRP Contact Message</h2>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px 8px;color:#888;width:100px;font-size:13px;">Name</td>
+                    <td style="padding:10px 8px;font-weight:600;font-size:13px;">{name}</td>
+                </tr>
+                <tr style="border-bottom:1px solid #eee;background:#fafafa;">
+                    <td style="padding:10px 8px;color:#888;font-size:13px;">Email</td>
+                    <td style="padding:10px 8px;font-size:13px;">
+                        <a href="mailto:{email}" style="color:#534AB7;">{email}</a>
+                    </td>
+                </tr>
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px 8px;color:#888;font-size:13px;">Topic</td>
+                    <td style="padding:10px 8px;font-size:13px;">{topic or '—'}</td>
+                </tr>
             </table>
-            <div style="margin-top:20px; padding:16px; background:#f5f5f5; border-radius:8px;">
-                <p style="margin:0; white-space:pre-wrap; color:#333;">{message}</p>
+            <div style="background:#f5f4fe;border-left:4px solid #534AB7;
+                        border-radius:4px;padding:16px;margin-bottom:20px;">
+                <p style="margin:0;white-space:pre-wrap;color:#333;
+                           font-size:14px;line-height:1.6;">{message}</p>
             </div>
-            <p style="margin-top:16px; color:#999; font-size:12px;">
-                Reply directly to <a href="mailto:{email}">{email}</a> to respond.
+            <p style="color:#aaa;font-size:12px;margin:0;">
+                Reply directly to
+                <a href="mailto:{email}" style="color:#534AB7;">{email}</a>
+                to respond to this message.
             </p>
         </div>
         """
 
+        # ── Call Resend REST API directly (no package import) ─────────────────
         try:
-            import resend
-            resend.api_key = api_key
+            response = requests.post(
+                'https://api.resend.com/emails',
+                headers={
+                    'Authorization': f'Bearer {api_key}',
+                    'Content-Type':  'application/json',
+                },
+                json={
+                    'from':     from_email,
+                    'to':       recipients,
+                    'reply_to': email,
+                    'subject':  f'[UGRP Contact] {topic or "General enquiry"} — from {name}',
+                    'html':     html_body,
+                },
+                timeout=10,
+            )
 
-            resend.Emails.send({
-                'from':     from_email,
-                'to':       recipients,
-                'reply_to': email,
-                'subject':  f'[UGRP Contact] {topic or "General enquiry"} — from {name}',
-                'html':     html_body,
-            })
+            if response.status_code not in (200, 201):
+                error_detail = response.json().get('message', response.text)
+                return Response(
+                    {'detail': f'Resend API error: {error_detail}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        except requests.exceptions.Timeout:
+            return Response(
+                {'detail': 'Email service timed out. Please try again.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         except Exception as exc:
             return Response(
                 {'detail': f'Failed to send email: {str(exc)}'},
