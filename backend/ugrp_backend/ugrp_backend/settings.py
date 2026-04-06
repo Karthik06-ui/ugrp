@@ -178,8 +178,7 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 
 # Who receives the contact form messages
 CONTACT_RECIPIENT_EMAILS = [
-    'kannarashi760@gmail.com',
-    'r.vigneshwaran20078@gmail.com',
+    'karthisundarakumar@gmail.com', 
 ]
 
 # From address — use onboarding@resend.dev until you verify your own domain
