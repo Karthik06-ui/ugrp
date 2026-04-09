@@ -138,9 +138,8 @@ export default function LoginPage() {
 
         {/* Demo Credentials */}
         <div className="text-xs text-gray-400 space-y-1">
-          <p className="text-gray-300 font-medium">Demo credentials</p>
-          <p>Mentor: mentor@ugrp.edu / Mentor@123</p>
-          <p>Student: student@ugrp.edu / Student@123</p>
+          <p className="text-gray-300 font-medium">Fyi</p>
+          <p>Kindly use your institution credentials to login/signup</p>
         </div>
       </div>
     </div>

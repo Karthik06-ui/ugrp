@@ -74,7 +74,7 @@ export default function RegisterPage() {
             <div>
               <label className="label">Email address</label>
               <input name="email" type="email" value={form.email} onChange={handle}
-                className="input" placeholder="you@university.edu" required />
+                className="input" placeholder="you@kct.ac.in" required />
             </div>
             <div>
               <label className="label">Password</label>
