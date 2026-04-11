@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from .models import Proposal
 
 ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
@@ -8,9 +7,9 @@ MAX_FILE_SIZE_MB   = 5
 
 class ProposalCreateSerializer(serializers.ModelSerializer):
     """
-    Used by students to submit a new proposal AND list their own proposals.
+    Used by students to submit a new proposal.
     Accepts multipart/form-data when an attachment is included.
-    `student` is injected from the request user — never from the payload.
+    Includes all applicant detail fields.
     """
     attachment_url = serializers.SerializerMethodField(read_only=True)
     project_title  = serializers.CharField(source='project.title', read_only=True)
@@ -19,10 +18,17 @@ class ProposalCreateSerializer(serializers.ModelSerializer):
         model  = Proposal
         fields = (
             'id', 'project', 'project_title',
+            # Applicant details
+            'applicant_name', 'applicant_roll_no', 'applicant_contact',
+            'applicant_email', 'applicant_department', 'applicant_year',
+            # Proposal content
             'message', 'attachment', 'attachment_url',
             'status', 'created_at', 'updated_at',
         )
-        read_only_fields = ('id', 'project_title', 'status', 'created_at', 'updated_at', 'attachment_url')
+        read_only_fields = (
+            'id', 'project_title', 'status',
+            'created_at', 'updated_at', 'attachment_url',
+        )
 
     def get_attachment_url(self, obj):
         if obj.attachment:
@@ -33,23 +39,26 @@ class ProposalCreateSerializer(serializers.ModelSerializer):
     def validate_attachment(self, file):
         if not file:
             return file
-
-        # Extension check
         name = file.name.lower()
         ext  = name.rsplit('.', 1)[-1] if '.' in name else ''
         if ext not in ALLOWED_EXTENSIONS:
             raise serializers.ValidationError(
-                f'Unsupported file type ".{ext}". '
-                f'Allowed: {", ".join(ALLOWED_EXTENSIONS)}.'
+                f'Unsupported file type ".{ext}". Allowed: {", ".join(ALLOWED_EXTENSIONS)}.'
             )
-
-        # Size check
         if file.size > MAX_FILE_SIZE_MB * 1024 * 1024:
             raise serializers.ValidationError(
-                f'File too large ({file.size // (1024*1024)} MB). Maximum allowed: {MAX_FILE_SIZE_MB} MB.'
+                f'File too large. Maximum allowed: {MAX_FILE_SIZE_MB} MB.'
             )
-
         return file
+
+    def validate_applicant_contact(self, value):
+        if value:
+            digits = ''.join(filter(str.isdigit, value))
+            if len(digits) < 10:
+                raise serializers.ValidationError(
+                    'Enter a valid contact number (minimum 10 digits).'
+                )
+        return value
 
     def validate(self, attrs):
         student = self.context['request'].user
@@ -73,7 +82,6 @@ class ProposalCreateSerializer(serializers.ModelSerializer):
                     'You may re-apply only after a rejection.'
                 )}
             )
-
         return attrs
 
     def create(self, validated_data):
@@ -83,24 +91,29 @@ class ProposalCreateSerializer(serializers.ModelSerializer):
 
 class ProposalListSerializer(serializers.ModelSerializer):
     """
-    Read-only serializer for mentors — includes file download URL.
+    Read-only serializer for mentors — shows full applicant details
+    so mentors can evaluate without visiting the student profile.
     """
-    student_email  = serializers.EmailField(source='student.email',  read_only=True)
-    student_name   = serializers.CharField(
-        source='student.student_profile.name', read_only=True, default=''
+    student_email        = serializers.EmailField(source='student.email',  read_only=True)
+    project_title        = serializers.CharField(source='project.title',   read_only=True)
+    attachment_url       = serializers.SerializerMethodField(read_only=True)
+    applicant_year_label = serializers.CharField(
+        source='get_applicant_year_display', read_only=True
     )
-    project_title  = serializers.CharField(source='project.title',   read_only=True)
-    attachment_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model  = Proposal
         fields = (
             'id',
-            'student', 'student_email', 'student_name',
+            'student', 'student_email',
             'project', 'project_title',
+            # Applicant details
+            'applicant_name', 'applicant_roll_no', 'applicant_contact',
+            'applicant_email', 'applicant_department',
+            'applicant_year', 'applicant_year_label',
+            # Proposal content
             'message', 'attachment', 'attachment_url',
-            'status',
-            'created_at', 'updated_at',
+            'status', 'created_at', 'updated_at',
         )
         read_only_fields = fields
 

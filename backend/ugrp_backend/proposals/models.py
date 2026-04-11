@@ -10,16 +10,20 @@ def proposal_upload_path(instance, filename):
 class Proposal(models.Model):
     """
     A student's application to a mentor's project.
-
-    Business rules enforced here (DB level) and in the serializer/view:
-      - A student cannot have two ACTIVE (non-rejected) proposals for the same project.
-      - Re-application is allowed only after a rejection.
+    Includes applicant details so mentors get a full picture
+    without having to visit the student profile separately.
     """
 
     class Status(models.TextChoices):
         PENDING  = 'pending',  'Pending'
         ACCEPTED = 'accepted', 'Accepted'
         REJECTED = 'rejected', 'Rejected'
+
+    class Year(models.IntegerChoices):
+        FIRST  = 1, '1st Year'
+        SECOND = 2, '2nd Year'
+        THIRD  = 3, '3rd Year'
+        FOURTH = 4, '4th Year'
 
     student    = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -32,13 +36,27 @@ class Proposal(models.Model):
         on_delete=models.CASCADE,
         related_name='proposals',
     )
+
+    # ── Applicant details (filled in the proposal form) ───────────────────────
+    applicant_name       = models.CharField(max_length=150, blank=True, help_text='Full name of the applicant.')
+    applicant_roll_no    = models.CharField(max_length=50,  blank=True, help_text='University roll number.')
+    applicant_contact    = models.CharField(max_length=20,  blank=True, help_text='Phone number.')
+    applicant_email      = models.EmailField(blank=True,               help_text='Contact email.')
+    applicant_department = models.CharField(max_length=150, blank=True, help_text='Department / branch.')
+    applicant_year       = models.IntegerField(
+        choices=Year.choices,
+        null=True, blank=True,
+        help_text='Current year of study.',
+    )
+
+    # ── Proposal content ──────────────────────────────────────────────────────
     message    = models.TextField(help_text='Cover letter / motivation for applying.')
     attachment = models.FileField(
         upload_to=proposal_upload_path,
-        null=True,
-        blank=True,
+        null=True, blank=True,
         help_text='Optional resume, transcript, or recommendation letter (PDF/DOC, max 5 MB).',
     )
+
     status     = models.CharField(
         max_length=10,
         choices=Status.choices,
