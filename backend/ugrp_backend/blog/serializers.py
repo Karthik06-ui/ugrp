@@ -5,6 +5,29 @@ MAX_IMAGE_MB = 5
 ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 
+def get_image_url_safe(obj, request):
+    """
+    Returns the correct image URL whether storage is local (dev)
+    or Cloudinary (production).
+
+    Problem: request.build_absolute_uri() prepends the server domain
+    to the URL. With Cloudinary, obj.image.url is already a full
+    https://res.cloudinary.com/... URL — prepending makes it broken.
+
+    Fix: only call build_absolute_uri when the URL is relative (local dev).
+    """
+    if not obj.image:
+        return None
+    url = obj.image.url
+    # Cloudinary / any absolute URL — return as-is
+    if url.startswith('http://') or url.startswith('https://'):
+        return url
+    # Local relative URL — make it absolute
+    if request:
+        return request.build_absolute_uri(url)
+    return url
+
+
 class BlogListSerializer(serializers.ModelSerializer):
     """Public list — no private author fields."""
     image_url = serializers.SerializerMethodField()
@@ -18,10 +41,7 @@ class BlogListSerializer(serializers.ModelSerializer):
         )
 
     def get_image_url(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+        return get_image_url_safe(obj, self.context.get('request'))
 
 
 class BlogDetailSerializer(BlogListSerializer):
@@ -52,10 +72,7 @@ class BlogCreateSerializer(serializers.ModelSerializer):
         }
 
     def get_image_url(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+        return get_image_url_safe(obj, self.context.get('request'))
 
     def validate_image(self, file):
         if not file:
