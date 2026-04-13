@@ -29,9 +29,9 @@ import ProfilePage       from './pages/shared/Profilepage'
 
 // Student pages
 import StudentDashboard from './pages/student/StudentDashboard'
-import MyProposals      from './pages/student/MyProposals'
+import MyProposals      from './pages/student/Myproposals'
 import MyEnrollments    from './pages/student/MyEnrollments'
-import MyTasks          from './pages/student/MyTasks'
+import MyTasks          from './pages/student/Mytasks'
 import MyReviews        from './pages/student/MyReviews'
 import ProjectRemarks   from './pages/student/ProjectRemarks'
 
