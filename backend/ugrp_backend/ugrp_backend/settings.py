@@ -215,6 +215,17 @@ if 'RENDER' in os.environ:
         'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
     }
 
+    STORAGES = {
+        'default': {
+            # All uploaded media (blog images, proposal attachments) → Cloudinary
+            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+        },
+        'staticfiles': {
+            # Static files (CSS, JS) → WhiteNoise
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+
     # CORS — allow your Vercel frontend
     CORS_ALLOWED_ORIGINS = [
         os.environ.get('FRONTEND_URL', ''),
