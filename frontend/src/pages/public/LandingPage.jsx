@@ -21,7 +21,7 @@ const NAV_LINKS = [
   // { label: 'People',  to: '/people' },
   { label: 'Process', to: '/process' },
   { label: 'Explore', to: '/explore' },
-  { label: 'Blogs',   to: '/blogs' },
+  { label: 'Blogs',   to: '/blog' },
   { label: 'Contact', to: '/contact' },
 ]
 
