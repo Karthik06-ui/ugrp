@@ -25,7 +25,7 @@ import ContactPage   from './pages/public/ContactPage'
 // Shared pages
 import ProjectsPage      from './pages/shared/ProjectPage'
 import ProjectDetailPage from './pages/shared/ProjectDetailPage'
-import ProfilePage       from './pages/shared/ProfilePage'
+import ProfilePage       from './pages/shared/Profilepage'
 
 // Student pages
 import StudentDashboard from './pages/student/StudentDashboard'
