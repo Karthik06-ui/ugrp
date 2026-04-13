@@ -23,7 +23,7 @@ import BlogDetailPage from './pages/public/BlogDetailPage'
 import ContactPage   from './pages/public/ContactPage'
 
 // Shared pages
-import ProjectsPage      from './pages/shared/ProjectsPage'
+import ProjectsPage      from './pages/shared/ProjectPage'
 import ProjectDetailPage from './pages/shared/ProjectDetailPage'
 import ProfilePage       from './pages/shared/ProfilePage'
 
