@@ -5,54 +5,65 @@ from django.conf import settings
 class Project(models.Model):
     """
     A research project created by a mentor.
-    Students can browse and submit proposals against open projects.
+    Can be either Academic (internal research) or Industry (company-sponsored).
+    Industry projects have extra fields: industry_name and deadline.
     """
 
     class Status(models.TextChoices):
         OPEN   = 'open',   'Open'
         CLOSED = 'closed', 'Closed'
 
-    class Domain(models.TextChoices):
-        AI          = 'ai', 'Artificial Intelligence'
-        ML          = 'ml', 'Machine Learning'
-        DS          = 'ds', 'Data Science'
-        WEB         = 'web', 'Web Development'
-        APP         = 'app', 'App Development'
-        MECH        = 'mech', 'Mechanical Engineering'
-        CIVIL       = 'civil', 'Civil Engineering'
-        ECE         = 'ece', 'Electronics & Communication'
-        ELECTRICAL  = 'electrical', 'Electrical Engineering'
-        IOT         = 'iot', 'Internet of Things'
-        ROBOTICS    = 'robotics', 'Robotics'
+    class ProjectType(models.TextChoices):
+        ACADEMIC = 'academic', 'Academic'
+        INDUSTRY = 'industry', 'Industry'
 
-    title       = models.CharField(max_length=255)
-    description = models.TextField()
-
-    mentor      = models.ForeignKey(
+    # ── Core fields ───────────────────────────────────────────────────────────
+    title        = models.CharField(max_length=255)
+    description  = models.TextField()
+    mentor       = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='projects',
         limit_choices_to={'role': 'mentor'},
     )
-
-    # ✅ New Domain Field
-    domain = models.CharField(
-        max_length=20,
-        choices=Domain.choices,
-        default=Domain.AI,
-    )
-
-    status      = models.CharField(
+    status       = models.CharField(
         max_length=10,
         choices=Status.choices,
         default=Status.OPEN,
     )
+    project_type = models.CharField(
+        max_length=10,
+        choices=ProjectType.choices,
+        default=ProjectType.ACADEMIC,
+        help_text='Academic = internal research project. Industry = company-sponsored project.',
+    )
 
-    created_at  = models.DateTimeField(auto_now_add=True)
+    # ── Industry-only fields (null/blank for academic projects) ───────────────
+    industry_name = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text='Name of the sponsoring company / industry partner. Required for industry projects.',
+    )
+    deadline = models.DateField(
+        null=True,
+        blank=True,
+        help_text='Application or project deadline. Recommended for industry projects.',
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Project'
 
     def __str__(self):
-        return f'[{self.status.upper()}] {self.title} ({self.domain}) — {self.mentor.email}'
+        tag = f'[{self.project_type.upper()}]' if self.project_type else ''
+        return f'{tag} [{self.status.upper()}] {self.title} — {self.mentor.email}'
+
+    @property
+    def is_industry(self):
+        return self.project_type == self.ProjectType.INDUSTRY
+
+    @property
+    def is_academic(self):
+        return self.project_type == self.ProjectType.ACADEMIC
