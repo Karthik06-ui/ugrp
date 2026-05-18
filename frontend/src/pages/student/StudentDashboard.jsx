@@ -26,7 +26,7 @@ export default function StudentDashboard() {
 
   return (
     <PageWrapper
-      title={`Welcome back${user?.email ? ', ' + user.email.split('@')[0] : ''} 👋`}
+      title={`Welcome back${user?.email ? ', ' + user.email.split('.')[0] : ''} 👋`}
       subtitle="Here's your research activity at a glance"
     >
       {/* Stat cards */}
