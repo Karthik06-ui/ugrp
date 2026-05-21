@@ -68,7 +68,7 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-brand-900 to-brand-700 text-white py-20 px-6 text-center">
         <p className="text-brand-200 text-sm font-medium tracking-widest uppercase mb-3">Get in touch</p>
-        <h1 className="text-4xl font-bold mb-4">Contact UGRP</h1>
+        <h1 className="text-4xl font-bold mb-4">Contact </h1>
         <p className="text-brand-100 max-w-md mx-auto text-lg leading-relaxed">
           Questions about the program, technical help, or just want to say hello — we're here.
         </p>
@@ -185,7 +185,7 @@ export default function ContactPage() {
               </button>
 
               <p className="text-xs text-gray-400 text-center">
-                Your message goes directly to the UGRP team. We never share your details.
+                Your message goes directly to the team. We never share your details.
               </p>
             </form>
           )}

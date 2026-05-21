@@ -1,122 +1,363 @@
-import { Link } from 'react-router-dom'
-import { UserPlus, Search, FileText, CheckCircle, BookOpen, Star, ArrowRight, ChevronRight } from 'lucide-react'
+import {
+  ArrowRight,
+  Compass,
+  Search,
+  BookOpen,
+  FlaskConical,
+  ShieldCheck,
+  Microscope,
+  Landmark,
+} from 'lucide-react'
 
-const studentSteps = [
-  { icon: UserPlus,    num: '01', title: 'Register as a student',   desc: 'Create your account with your university email, select the student role, and fill in your profile — department, year, skills, and a short bio.' },
-  { icon: Search,      num: '02', title: 'Browse open projects',    desc: 'Explore all research projects posted by faculty mentors. Filter by status or search by keyword to find the right fit for your interests.' },
-  { icon: FileText,    num: '03', title: 'Submit a proposal',       desc: 'Write a personalised cover message explaining your motivation and relevant experience. Optionally attach your resume or transcript.' },
-  { icon: CheckCircle, num: '04', title: 'Wait for a decision',     desc: 'The mentor reviews all proposals and either accepts or rejects. You will see the status update live on your proposals page.' },
-  { icon: BookOpen,    num: '05', title: 'Start the research',      desc: 'Once accepted, you are enrolled. The mentor assigns tasks, you update their status, and progress is tracked in your dashboard.' },
-  { icon: Star,        num: '06', title: 'Receive a review',        desc: 'At the end of the project, your mentor writes a formal review with a rating and comments — a permanent record in your UGRP profile.' },
+const stages = [
+  {
+    number: '01',
+    icon: Compass,
+    title: 'Discovery & Entry',
+    short: 'The first deliberate step into research.',
+    desc:
+      'Students discover KREST, understand the framework, explore pathways, and consciously choose to begin their research journey.',
+    color: 'from-sky-500 to-cyan-400',
+  },
+  {
+    number: '02',
+    icon: Search,
+    title: 'Problem Identification',
+    short: 'Defining the question worth exploring.',
+    desc:
+      'Students collaborate with faculty mentors to identify, refine, and scope meaningful areas of inquiry.',
+    color: 'from-indigo-500 to-violet-500',
+  },
+  {
+    number: '03',
+    icon: BookOpen,
+    title: 'REFLECT',
+    short: 'Foundational research training.',
+    desc:
+      'Students develop research literacy, critical inquiry, ethics, documentation discipline, and scholarly practice.',
+    color: 'from-emerald-500 to-teal-400',
+  },
+  {
+    number: '04',
+    icon: FlaskConical,
+    title: 'Nano Research Project',
+    short: 'The first real research experience.',
+    desc:
+      'Students execute a scoped research exercise focused on process quality, consistency, and intellectual engagement.',
+    color: 'from-orange-500 to-amber-400',
+  },
+  {
+    number: '05',
+    icon: ShieldCheck,
+    title: 'Evaluation Gate',
+    short: 'Readiness evaluated with rigour.',
+    desc:
+      'Faculty panels assess documentation quality, inquiry discipline, and research readiness for sustained research.',
+    color: 'from-rose-500 to-pink-500',
+  },
+  {
+    number: '06',
+    icon: Microscope,
+    title: 'Full Guided Research',
+    short: 'Long-duration faculty-mentored inquiry.',
+    desc:
+      'Selected students engage in milestone-driven research contributing to institutional research circles.',
+    color: 'from-fuchsia-500 to-purple-500',
+  },
+  {
+    number: '07',
+    icon: Landmark,
+    title: 'Stewardship & Continuity',
+    short: 'Giving back to the ecosystem.',
+    desc:
+      'Experienced scholars mentor future cohorts and preserve institutional research continuity.',
+    color: 'from-slate-700 to-slate-900',
+  },
 ]
 
-const mentorSteps = [
-  { num: '01', title: 'Register as a mentor',   desc: 'Create your account, choose the mentor role, and complete your faculty profile with your department and designation.' },
-  { num: '02', title: 'Create a project',       desc: 'Post a research project with a title, description, and open/closed status. Students can immediately start discovering and applying.' },
-  { num: '03', title: 'Review proposals',       desc: 'Browse all incoming proposals from students in your proposals inbox — filterable by project or status.' },
-  { num: '04', title: 'Accept or reject',       desc: 'Accept a student to enroll them instantly, or reject to keep the project open for better matches. Rejected students may re-apply.' },
-  { num: '05', title: 'Assign tasks',           desc: 'Break the project into tasks and assign them to enrolled students with due dates. Track completion from your dashboard.' },
-  { num: '06', title: 'Review and remark',      desc: 'Post progress remarks for the team and write a formal review with a rating when the project concludes.' },
-]
-
-export default function ProcessPage() {
+export default function JourneyPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-brand-900 to-brand-700 text-white py-20 px-6 text-center">
-        <p className="text-brand-200 text-sm font-medium tracking-widest uppercase mb-3">How it works</p>
-        <h1 className="text-4xl font-bold mb-4">The UGRP process</h1>
-        <p className="text-brand-100 max-w-xl mx-auto text-lg leading-relaxed">
-          A clear, step-by-step workflow for students and mentors — from registration to reviewed research output.
-        </p>
-      </section>
+    <div className="bg-[#F6F8FB] text-[#0F172A] overflow-hidden">
 
-      {/* Student process */}
-      <section className="max-w-4xl mx-auto px-6 py-20">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center">
-            <BookOpen size={18} className="text-white" />
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-black/5 bg-white">
+
+        <div className="absolute inset-0">
+          <div className="absolute right-[-120px] top-[-120px] h-[520px] w-[520px] rounded-full bg-indigo-500/10 blur-[140px]" />
+          <div className="absolute left-[-120px] bottom-[-120px] h-[520px] w-[520px] rounded-full bg-sky-400/10 blur-[140px]" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1700px] px-6 pb-28 pt-40 lg:px-16">
+
+          {/* BREADCRUMB */}
+          <div className="mb-10 flex items-center gap-3 text-sm text-slate-400">
+            <span>Home</span>
+            <span>→</span>
+            <span className="text-slate-600">The KREST Journey</span>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">For students</h2>
-            <p className="text-sm text-gray-400">From discovery to formal review in 6 steps</p>
+
+          <div className="max-w-6xl">
+
+            <p className="mb-6 text-[11px] font-semibold uppercase tracking-[0.35em] text-indigo-600">
+              Research Progression Framework
+            </p>
+
+            <h1 className="text-[clamp(4rem,9vw,8rem)] font-semibold leading-[0.9] tracking-[-0.07em] text-slate-900">
+              The KREST
+              <br />
+              Journey
+            </h1>
+
+            <p className="mt-10 max-w-4xl text-[clamp(1.2rem,2vw,1.6rem)] leading-[2] text-slate-600">
+              Seven interconnected stages guiding students from first curiosity
+              toward sustained research contribution, scholarly growth,
+              mentorship, and institutional stewardship.
+            </p>
+          </div>
+
+          {/* JOURNEY MAP */}
+          <div className="relative mt-28 overflow-x-auto pb-10">
+
+            <div className="absolute left-0 top-[68px] h-[2px] w-full bg-gradient-to-r from-sky-400 via-indigo-500 to-slate-700" />
+
+            <div className="relative flex min-w-[1500px] items-start justify-between gap-10">
+
+              {stages.map((stage, index) => {
+                const Icon = stage.icon
+
+                return (
+                  <a
+                    key={stage.number}
+                    href={`#stage-${stage.number}`}
+                    className="group relative flex w-[190px] flex-col items-center text-center"
+                  >
+
+                    <div className={`relative z-10 flex h-36 w-36 items-center justify-center rounded-full bg-gradient-to-br ${stage.color} shadow-[0_20px_60px_rgba(79,70,229,0.18)] transition-all duration-500 group-hover:scale-105`}>
+
+                      <div className="absolute inset-[8px] rounded-full bg-white/10 backdrop-blur-xl" />
+
+                      <div className="relative z-10 flex flex-col items-center text-white">
+                        <Icon size={30} />
+                        <span className="mt-2 text-sm font-semibold tracking-[0.2em]">
+                          {stage.number}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="mt-8 text-xl font-semibold tracking-[-0.03em] text-slate-900">
+                      {stage.title}
+                    </h3>
+
+                    <p className="mt-3 text-sm leading-7 text-slate-500">
+                      {stage.short}
+                    </p>
+                  </a>
+                )
+              })}
+            </div>
           </div>
         </div>
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-6 top-8 bottom-8 w-px bg-gray-100 hidden sm:block" />
-          <div className="space-y-6">
-            {studentSteps.map(({ icon: Icon, num, title, desc }) => (
-              <div key={num} className="flex gap-5">
-                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-teal-50 border-2 border-white shadow-sm flex items-center justify-center z-10">
-                  <Icon size={18} className="text-teal-600" />
-                </div>
-                <div className="pt-2 pb-4 border-b border-gray-50 flex-1">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-xs font-bold text-teal-500 uppercase tracking-widest">{num}</span>
-                    <h3 className="font-semibold text-gray-900">{title}</h3>
+      </section>
+
+      {/* DETAILED STAGES */}
+      <section className="relative py-32">
+
+        <div className="mx-auto max-w-[1500px] px-6 lg:px-16">
+
+          <div className="space-y-28">
+
+            {stages.map((stage, index) => {
+              const Icon = stage.icon
+
+              return (
+                <div
+                  key={stage.number}
+                  id={`stage-${stage.number}`}
+                  className="group grid gap-16 border-b border-black/5 pb-24 xl:grid-cols-[220px_1fr]"
+                >
+
+                  {/* LEFT */}
+                  <div>
+
+                    <div className={`flex h-28 w-28 items-center justify-center rounded-[32px] bg-gradient-to-br ${stage.color} shadow-lg`}>
+
+                      <Icon size={34} className="text-white" />
+                    </div>
+
+                    <div className="mt-8 text-7xl font-bold leading-none tracking-[-0.06em] text-slate-200">
+                      {stage.number}
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="mt-8">
-          <Link to="/register" className="btn-primary gap-2 w-fit">
-            Start as a student <ArrowRight size={15} />
-          </Link>
-        </div>
-      </section>
 
-      {/* Divider */}
-      <div className="bg-gray-50 border-y border-gray-100 py-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-coral-400 flex items-center justify-center">
-              <Star size={18} className="text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">For mentors</h2>
-              <p className="text-sm text-gray-400">Post, review, and guide student researchers</p>
-            </div>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {mentorSteps.map(({ num, title, desc }) => (
-              <div key={num} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-card">
-                <div className="w-8 h-8 rounded-xl bg-coral-50 flex items-center justify-center mb-3">
-                  <span className="text-xs font-bold text-coral-600">{num}</span>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-1.5 text-sm">{title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8">
-            <Link to="/register" className="btn-primary gap-2 w-fit">
-              Start as a mentor <ArrowRight size={15} />
-            </Link>
-          </div>
-        </div>
-      </div>
+                  {/* RIGHT */}
+                  <div>
 
-      {/* FAQ strip */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Common questions</h2>
-        <div className="space-y-4">
-          {[
-            ['Can I apply to multiple projects?',        'Yes — you can apply to as many open projects as you want. However, you can only have one active proposal per project at a time.'],
-            ['What happens if my proposal is rejected?', 'You can re-apply to the same project after a rejection, with a new and improved message.'],
-            ['Can mentors see my contact details?',      'Mentors see your email and profile. Your proposal attachment (resume, etc.) is only shared when you include it.'],
-            ['Is there a time limit for projects?',      'Project duration is set by the mentor. Check the project description for details on timelines.'],
-          ].map(([q, a]) => (
-            <div key={q} className="border border-gray-100 rounded-xl p-5">
-              <p className="font-semibold text-gray-900 text-sm mb-1.5 flex items-center gap-2">
-                <ChevronRight size={14} className="text-brand-400 flex-shrink-0" /> {q}
-              </p>
-              <p className="text-sm text-gray-500 leading-relaxed pl-5">{a}</p>
-            </div>
-          ))}
+                    <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.3em] text-indigo-600">
+                      Stage {stage.number}
+                    </p>
+
+                    <h2 className="text-[clamp(2.8rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-slate-900">
+                      {stage.title}
+                    </h2>
+
+                    <p className="mt-8 max-w-5xl text-xl leading-[2] text-slate-600">
+                      {stage.desc}
+                    </p>
+
+                    {/* CUSTOM CONTENT */}
+                    {stage.number === '01' && (
+                      <div className="mt-12 grid gap-6 md:grid-cols-3">
+
+                        {[
+                          'Explore the KREST ecosystem and pathways',
+                          'Understand expectations and progression structure',
+                          'Submit application aligned to interest and readiness',
+                        ].map((item) => (
+                          <div
+                            key={item}
+                            className="rounded-[28px] border border-black/5 bg-white p-8"
+                          >
+                            <div className="mb-5 h-3 w-3 rounded-full bg-sky-500" />
+
+                            <p className="text-[15px] leading-8 text-slate-700">
+                              {item}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {stage.number === '03' && (
+                      <div className="mt-14 grid gap-6 md:grid-cols-2">
+
+                        {[
+                          'Research methodology fundamentals',
+                          'Academic integrity & ethics',
+                          'Literature review & citation practice',
+                          'Critical inquiry & evidence evaluation',
+                          'Problem framing & hypothesis development',
+                          'Research documentation standards',
+                        ].map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-start gap-4 rounded-[24px] bg-white p-6"
+                          >
+                            <div className="mt-2 h-2 w-2 rounded-full bg-emerald-500" />
+
+                            <p className="text-[15px] leading-8 text-slate-700">
+                              {item}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {stage.number === '05' && (
+                      <div className="mt-14 overflow-hidden rounded-[32px] border border-black/5 bg-white">
+
+                        <div className="grid grid-cols-3 border-b border-black/5 bg-slate-50">
+
+                          <div className="p-6 text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+                            Outcome
+                          </div>
+
+                          <div className="col-span-2 p-6 text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+                            Meaning
+                          </div>
+                        </div>
+
+                        {[
+                          {
+                            title: 'Selected',
+                            desc: 'Progresses into full guided research.',
+                          },
+                          {
+                            title: 'Deferred',
+                            desc: 'Encouraged for future intake cycles after further preparation.',
+                          },
+                          {
+                            title: 'Redirected',
+                            desc: 'Guided toward skill development or alternative pathways.',
+                          },
+                        ].map((item) => (
+                          <div
+                            key={item.title}
+                            className="grid grid-cols-3 border-b border-black/5 last:border-none"
+                          >
+
+                            <div className="p-6 text-lg font-semibold text-slate-900">
+                              {item.title}
+                            </div>
+
+                            <div className="col-span-2 p-6 text-[15px] leading-8 text-slate-600">
+                              {item.desc}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {stage.number === '06' && (
+                      <div className="mt-14 grid gap-6 md:grid-cols-2">
+
+                        {[
+                          'Research papers & journal submissions',
+                          'Technical reports & working papers',
+                          'Datasets & experimental findings',
+                          'Prototypes & proof-of-concept systems',
+                          'Simulation frameworks & models',
+                          'Applied research recommendations',
+                        ].map((item) => (
+                          <div
+                            key={item}
+                            className="rounded-[24px] border border-black/5 bg-white p-7"
+                          >
+                            <div className="mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-fuchsia-600">
+                              Research Output
+                            </div>
+
+                            <p className="text-[15px] leading-8 text-slate-700">
+                              {item}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {stage.number === '07' && (
+                      <div className="relative mt-16 overflow-hidden rounded-[36px] bg-[#0F172A] p-10 text-white">
+
+                        <div className="absolute right-[-100px] top-[-100px] h-[300px] w-[300px] rounded-full bg-indigo-500/20 blur-[100px]" />
+
+                        <div className="relative z-10">
+
+                          <p className="mb-5 text-[11px] uppercase tracking-[0.3em] text-indigo-300">
+                            KREST Fellowship
+                          </p>
+
+                          <h3 className="text-4xl font-semibold tracking-[-0.04em]">
+                            Stewardship becomes legacy.
+                          </h3>
+
+                          <p className="mt-6 max-w-3xl text-lg leading-[2] text-slate-300">
+                            Exceptional contributors may be recognised as
+                            KREST Fellows — scholars who demonstrate research
+                            excellence, mentorship capability, and long-term
+                            contribution toward institutional research culture.
+                          </p>
+
+                          <button className="group mt-10 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-sm font-semibold text-slate-900 transition-all duration-300 hover:gap-5">
+                            Explore Fellowship
+                            <ArrowRight size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </section>
     </div>

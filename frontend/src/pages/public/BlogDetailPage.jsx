@@ -89,7 +89,7 @@ export default function BlogDetailPage() {
           </div>
           <div>
             <p className="font-semibold text-gray-900">{blog.author_name}</p>
-            <p className="text-xs text-gray-400 mt-0.5">UGRP community contributor</p>
+            <p className="text-xs text-gray-400 mt-0.5"> community contributor</p>
           </div>
         </div>
 

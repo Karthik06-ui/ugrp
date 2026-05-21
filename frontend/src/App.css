@@ -17,6 +17,13 @@
   }
 }
 
+.featured-card:hover {
+  transform: translateY(-8px);
+}
+
+.featured-card:hover .featured-image {
+  transform: scale(1.06);
+}
 .hero {
   position: relative;
 

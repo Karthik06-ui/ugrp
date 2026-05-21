@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
-import { useState } from 'react'
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
 
 // Layout
@@ -21,7 +21,10 @@ import ExploreUsPage from './pages/public/ExploreUsPage'
 import BlogsPage     from './pages/public/BlogsPage'
 import BlogDetailPage from './pages/public/BlogDetailPage'
 import ContactPage   from './pages/public/ContactPage'
-
+import StudentsFacultyPage   from './pages/public/StudentsFacultyPage'
+import ReflectPage from './pages/programs/ReflectPage'
+import CorePage from './pages/programs/CorePage'
+import KripPage from './pages/programs/KripPage'
 // Shared pages
 import ProjectsPage      from './pages/shared/ProjectPage'
 import ProjectDetailPage from './pages/shared/ProjectDetailPage'
@@ -43,6 +46,16 @@ import ProposalsInbox  from './pages/mentor/ProposalsInbox'
 import ManageTasks     from './pages/mentor/ManageTasks'
 import WriteReviews    from './pages/mentor/WriteReviews'
 import PostRemarks     from './pages/mentor/PostRemarks'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
 
 // ── Shell layout: Navbar + optional Sidebar ───────────────────────────────────
 function AppShell() {
@@ -79,7 +92,10 @@ export default function App() {
   const dashPath = user?.role === 'student' ? '/student/dashboard' : '/mentor/dashboard'
 
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+
+<Routes>
 
       {/* ── Standalone public pages (own full layout) ─────────────────────── */}
       <Route path="/"        element={<LandingPage />} />
@@ -95,6 +111,10 @@ export default function App() {
         <Route path="/blog"    element={<BlogsPage />} />
         <Route path="/blog/:id"element={<BlogDetailPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/programs/reflect" element={<ReflectPage />} />
+        <Route path="/programs/core" element={<CorePage />} />
+        <Route path="/programs/krip" element={<KripPage />} />
+        <Route path="/students-faculty" element={<StudentsFacultyPage />} />
       </Route>
 
       {/* ── Authenticated shell: Navbar + Sidebar ────────────────────────── */}
@@ -143,5 +163,7 @@ export default function App() {
       </Route>
 
     </Routes>
+
+    </>
   )
 }

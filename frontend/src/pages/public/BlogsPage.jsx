@@ -1,7 +1,16 @@
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, PenLine, Image as ImageIcon, X, ExternalLink, Calendar, User, Tag } from 'lucide-react'
+import {
+  Search,
+  PenLine,
+  Image as ImageIcon,
+  X,
+  ExternalLink,
+  User,
+  Tag,
+  ArrowRight,
+} from 'lucide-react'
 import { listBlogs, createBlog } from '../../api/blogs'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -9,317 +18,522 @@ import Modal from '../../components/ui/Modal'
 import { PageSpinner } from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
 
-// ── Blog card — matches the design in the screenshot ─────────────────────────
+/* ────────────────────────────────────────────────────────────────
+   BLOG CARD
+──────────────────────────────────────────────────────────────── */
 function BlogCard({ blog }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all group flex flex-col">
-      {/* Cover image */}
-      <Link to={`/blog/${blog.id}`} className="relative block overflow-hidden h-52 bg-gray-100 flex-shrink-0">
+    <article className="group flex flex-col overflow-hidden border border-black/5 bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
+
+      {/* IMAGE */}
+      <Link
+        to={`/blog/${blog.id}`}
+        className="relative block h-[260px] overflow-hidden bg-slate-100"
+      >
         {blog.image_url ? (
-          <img src={blog.image_url} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img
+            src={blog.image_url}
+            alt={blog.title}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center">
-            <PenLine size={32} className="text-brand-300" />
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+            <PenLine size={34} className="text-slate-400" />
           </div>
         )}
-        {/* Category pill overlaid on image */}
+
         {blog.category && (
-          <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+          <div className="absolute left-5 top-5 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-700 backdrop-blur">
             {blog.category}
-          </span>
+          </div>
         )}
       </Link>
 
-      {/* Content */}
-      <div className="p-5 flex flex-col gap-2 flex-1">
-        {/* Date */}
-        <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">
-          {format(new Date(blog.created_at), 'MMM, yyyy')}
-        </p>
+      {/* CONTENT */}
+      <div className="flex flex-1 flex-col p-8">
 
-        {/* Title */}
+        <div className="mb-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-slate-400">
+          <span>
+            {format(new Date(blog.created_at), 'MMM dd, yyyy')}
+          </span>
+
+          <span>•</span>
+
+          <span>{blog.author_name}</span>
+        </div>
+
         <Link to={`/blog/${blog.id}`}>
-          <h3 className="font-bold text-gray-900 leading-snug hover:text-brand-600 transition-colors line-clamp-2">
+          <h3 className="text-2xl font-semibold leading-tight tracking-[-0.03em] text-slate-900 transition-colors duration-300 group-hover:text-sky-700">
             {blog.title}
           </h3>
         </Link>
 
-        {/* Excerpt */}
-        <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 flex-1">
+        <p className="mt-5 flex-1 text-[15px] leading-8 text-slate-600 line-clamp-4">
           {blog.content}
         </p>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-50 mt-auto">
-          <span className="text-xs text-gray-400 font-medium">{blog.author_name}</span>
+        <div className="mt-8 flex items-center justify-between border-t border-black/5 pt-6">
+
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <User size={15} />
+            {blog.author_name}
+          </div>
+
           {blog.external_link ? (
             <a
               href={blog.external_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-brand-600 font-semibold hover:text-brand-800 flex items-center gap-1 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all duration-300 hover:gap-3"
             >
-              Read more <ExternalLink size={11} />
+              Read Article
+              <ExternalLink size={15} />
             </a>
           ) : (
-            <Link to={`/blog/${blog.id}`} className="text-xs text-brand-600 font-semibold hover:text-brand-800 flex items-center gap-1">
-              Read more →
+            <Link
+              to={`/blog/${blog.id}`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all duration-300 hover:gap-3"
+            >
+              Read More
+              <ArrowRight size={15} />
             </Link>
           )}
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 
-// ── Write blog form ───────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────
+   WRITE BLOG FORM
+──────────────────────────────────────────────────────────────── */
 function WriteBlogForm({ onClose }) {
   const qc = useQueryClient()
   const imgRef = useRef(null)
+
   const [preview, setPreview] = useState(null)
+
   const [form, setForm] = useState({
-    title: '', content: '', category: '', external_link: '',
-    author_name: '', author_email: '', author_contact: '', image: null,
+    title: '',
+    content: '',
+    category: '',
+    external_link: '',
+    author_name: '',
+    author_email: '',
+    author_contact: '',
+    image: null,
   })
+
   const [errors, setErrors] = useState({})
 
-  function handle(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })) }
+  function handle(e) {
+    setForm(f => ({
+      ...f,
+      [e.target.name]: e.target.value,
+    }))
+  }
 
   function handleImage(e) {
     const file = e.target.files?.[0]
+
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5 MB'); return }
-    setForm(f => ({ ...f, image: file }))
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be below 5MB')
+      return
+    }
+
+    setForm(f => ({
+      ...f,
+      image: file,
+    }))
+
     setPreview(URL.createObjectURL(file))
   }
 
   function validate() {
     const e = {}
-    if (!form.title.trim())          e.title          = 'Title is required'
-    if (!form.content.trim())        e.content        = 'Content is required'
-    if (!form.author_name.trim())    e.author_name    = 'Your name is required'
-    if (!form.author_email.trim())   e.author_email   = 'Email is required'
+
+    if (!form.title.trim()) e.title = 'Title is required'
+    if (!form.content.trim()) e.content = 'Content is required'
+    if (!form.author_name.trim()) e.author_name = 'Name is required'
+    if (!form.author_email.trim()) e.author_email = 'Email is required'
     if (!form.author_contact.trim()) e.author_contact = 'Contact is required'
+
     setErrors(e)
+
     return Object.keys(e).length === 0
   }
 
-  const mut = useMutation({
+  const mutation = useMutation({
     mutationFn: createBlog,
+
     onSuccess: () => {
-      toast.success('Blog published!')
+      toast.success('Blog published')
       qc.invalidateQueries(['blogs'])
       onClose()
     },
-    onError: e => {
-      const data = e.response?.data
-      if (data && typeof data === 'object') {
-        setErrors(data)
-        toast.error('Please fix the errors below')
-      } else {
-        toast.error('Could not publish blog')
-      }
+
+    onError: () => {
+      toast.error('Failed to publish blog')
     },
   })
 
   function submit(e) {
     e.preventDefault()
-    if (validate()) mut.mutate(form)
+
+    if (validate()) {
+      mutation.mutate(form)
+    }
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
-      {/* Image upload */}
+    <form onSubmit={submit} className="space-y-6">
+
+      {/* IMAGE */}
       <div>
-        <label className="label">Cover image <span className="normal-case font-normal text-gray-400">(optional)</span></label>
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          Cover Image
+        </label>
+
         {preview ? (
-          <div className="relative rounded-xl overflow-hidden h-40 group">
-            <img src={preview} alt="preview" className="w-full h-full object-cover" />
+          <div className="relative h-56 overflow-hidden border border-black/5">
+            <img
+              src={preview}
+              alt="preview"
+              className="h-full w-full object-cover"
+            />
+
             <button
               type="button"
-              onClick={() => { setPreview(null); setForm(f => ({ ...f, image: null })) }}
-              className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+              onClick={() => {
+                setPreview(null)
+                setForm(f => ({ ...f, image: null }))
+              }}
+              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center bg-black/70 text-white"
             >
-              <X size={13} />
+              <X size={16} />
             </button>
           </div>
         ) : (
           <div
             onClick={() => imgRef.current?.click()}
-            className="border-2 border-dashed border-gray-200 rounded-xl h-36 flex flex-col items-center
-                       justify-center gap-2 cursor-pointer hover:border-brand-300 hover:bg-brand-50 transition-all"
+            className="flex h-56 cursor-pointer flex-col items-center justify-center border border-dashed border-slate-300 bg-slate-50 transition-colors duration-300 hover:bg-slate-100"
           >
-            <ImageIcon size={22} className="text-gray-300" />
-            <p className="text-xs text-gray-400">Click to upload cover image (JPG/PNG, max 5 MB)</p>
+            <ImageIcon size={30} className="text-slate-400" />
+
+            <p className="mt-4 text-sm text-slate-500">
+              Click to upload cover image
+            </p>
           </div>
         )}
-        <input ref={imgRef} type="file" accept=".jpg,.jpeg,.png,.webp" onChange={handleImage} className="hidden" />
-      </div>
 
-      {/* Title */}
-      <div>
-        <label className="label">Blog title *</label>
-        <input name="title" value={form.title} onChange={handle} className="input" placeholder="e.g. When Problems Refuse to Stay Simple" />
-        {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
-      </div>
-
-      {/* Category */}
-      <div>
-        <label className="label">Category / tag <span className="normal-case font-normal text-gray-400">(optional)</span></label>
-        <input name="category" value={form.category} onChange={handle} className="input" placeholder="e.g. Research, AI, Fellowship, Systems Thinking" />
-      </div>
-
-      {/* Content */}
-      <div>
-        <label className="label">Blog content *</label>
-        <textarea name="content" value={form.content} onChange={handle}
-          className="input min-h-[160px] resize-y"
-          placeholder="Write your blog post here. You can share insights, experiences, research findings, or anything relevant to the UGRP community..."
+        <input
+          ref={imgRef}
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp"
+          onChange={handleImage}
+          className="hidden"
         />
-        {errors.content && <p className="text-xs text-red-500 mt-1">{errors.content}</p>}
       </div>
 
-      {/* External link */}
+      {/* TITLE */}
       <div>
-        <label className="label">External link <span className="normal-case font-normal text-gray-400">(optional — LinkedIn, paper, etc.)</span></label>
-        <input name="external_link" value={form.external_link} onChange={handle} type="url"
-          className="input" placeholder="https://linkedin.com/posts/..." />
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          Blog Title
+        </label>
+
+        <input
+          name="title"
+          value={form.title}
+          onChange={handle}
+          placeholder="Enter blog title"
+          className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+        />
+
+        {errors.title && (
+          <p className="mt-2 text-xs text-red-500">
+            {errors.title}
+          </p>
+        )}
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-100 pt-4">
-        <p className="text-xs text-gray-400 mb-3 flex items-center gap-1.5">
-          <User size={11} /> Your contact details are stored privately — only your <strong className="text-gray-600">name</strong> is shown on the blog.
-        </p>
-      </div>
-
-      {/* Author name */}
+      {/* CATEGORY */}
       <div>
-        <label className="label">Your name * <span className="normal-case font-normal text-gray-400">(shown publicly)</span></label>
-        <input name="author_name" value={form.author_name} onChange={handle} className="input" placeholder="e.g. Arjun S." />
-        {errors.author_name && <p className="text-xs text-red-500 mt-1">{errors.author_name}</p>}
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          Category
+        </label>
+
+        <input
+          name="category"
+          value={form.category}
+          onChange={handle}
+          placeholder="Research, AI, Systems..."
+          className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {/* Email */}
+      {/* CONTENT */}
+      <div>
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          Blog Content
+        </label>
+
+        <textarea
+          name="content"
+          value={form.content}
+          onChange={handle}
+          placeholder="Write your thoughts..."
+          className="min-h-[220px] w-full resize-y border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+        />
+
+        {errors.content && (
+          <p className="mt-2 text-xs text-red-500">
+            {errors.content}
+          </p>
+        )}
+      </div>
+
+      {/* LINK */}
+      <div>
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          External Link
+        </label>
+
+        <input
+          type="url"
+          name="external_link"
+          value={form.external_link}
+          onChange={handle}
+          placeholder="https://..."
+          className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+        />
+      </div>
+
+      {/* AUTHOR */}
+      <div className="grid gap-5 md:grid-cols-2">
+
         <div>
-          <label className="label">Email * <span className="normal-case font-normal text-gray-400">(private)</span></label>
-          <input name="author_email" value={form.author_email} onChange={handle} type="email" className="input" placeholder="you@example.com" />
-          {errors.author_email && <p className="text-xs text-red-500 mt-1">{errors.author_email}</p>}
+          <label className="mb-3 block text-sm font-semibold text-slate-700">
+            Your Name
+          </label>
+
+          <input
+            name="author_name"
+            value={form.author_name}
+            onChange={handle}
+            className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+          />
         </div>
-        {/* Contact */}
+
         <div>
-          <label className="label">Contact * <span className="normal-case font-normal text-gray-400">(private)</span></label>
-          <input name="author_contact" value={form.author_contact} onChange={handle} className="input" placeholder="+91 99999 99999" />
-          {errors.author_contact && <p className="text-xs text-red-500 mt-1">{errors.author_contact}</p>}
+          <label className="mb-3 block text-sm font-semibold text-slate-700">
+            Contact
+          </label>
+
+          <input
+            name="author_contact"
+            value={form.author_contact}
+            onChange={handle}
+            className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+          />
         </div>
       </div>
 
-      <button type="submit" disabled={mut.isPending} className="btn-primary w-full justify-center py-2.5 mt-2">
-        {mut.isPending ? 'Publishing…' : 'Publish blog post'}
+      {/* EMAIL */}
+      <div>
+        <label className="mb-3 block text-sm font-semibold text-slate-700">
+          Email
+        </label>
+
+        <input
+          type="email"
+          name="author_email"
+          value={form.author_email}
+          onChange={handle}
+          className="w-full border border-slate-200 px-5 py-4 outline-none transition-all duration-300 focus:border-slate-900"
+        />
+      </div>
+
+      {/* BUTTON */}
+      <button
+        type="submit"
+        disabled={mutation.isPending}
+        className="w-full bg-slate-900 px-6 py-4 text-sm font-semibold uppercase tracking-[0.15em] text-white transition-colors duration-300 hover:bg-slate-800"
+      >
+        {mutation.isPending ? 'Publishing...' : 'Publish Blog'}
       </button>
     </form>
   )
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────
+   PAGE
+──────────────────────────────────────────────────────────────── */
 export default function BlogsPage() {
-  const [search,    setSearch]    = useState('')
-  const [category,  setCategory]  = useState('')
+  const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('')
   const [writeOpen, setWriteOpen] = useState(false)
 
   const { data: blogs = [], isLoading } = useQuery({
     queryKey: ['blogs', search, category],
-    queryFn:  () => listBlogs({ search, category }).then(r => r.data),
+
+    queryFn: () =>
+      listBlogs({ search, category }).then(r => r.data),
   })
 
-  // Unique categories from fetched blogs
-  const allCategories = [...new Set((blogs).map(b => b.category).filter(Boolean))]
+  const categories = [
+    ...new Set(blogs.map(b => b.category).filter(Boolean)),
+  ]
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-brand-900 to-brand-700 text-white py-20 px-6">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-6 flex-wrap">
-          <div>
-            <p className="text-brand-200 text-sm font-medium tracking-widest uppercase mb-3">Community blog</p>
-            <h1 className="text-4xl font-bold mb-3">Stories from the research community</h1>
-            <p className="text-brand-100 max-w-lg text-lg leading-relaxed">
-              Insights, experiences, and ideas shared by students, mentors, and researchers.
-              Anyone can read — anyone can write.
-            </p>
-          </div>
+    <div className="bg-[#F6F8FB] text-[#0F172A]">
+
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-black/5 bg-[#0F172A] text-white">
+
+        <div className="absolute inset-0">
+          <div className="absolute right-[-120px] top-[-120px] h-[520px] w-[520px] rounded-full bg-sky-500/10 blur-[120px]" />
+          <div className="absolute bottom-[-120px] left-[-120px] h-[520px] w-[520px] rounded-full bg-indigo-500/10 blur-[120px]" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1600px] px-6 pb-28 pt-40 lg:px-16">
+
+          <p className="mb-6 text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-300">
+            KREST Journal
+          </p>
+
+          <h1 className="max-w-5xl text-[clamp(4rem,8vw,8rem)] font-semibold leading-[0.92] tracking-[-0.07em]">
+            Stories,
+            <br />
+            Inquiry &
+            <br />
+            Reflection.
+          </h1>
+
+          <p className="mt-10 max-w-3xl text-lg leading-[2] text-slate-300">
+            Research experiences, essays, insights, experiments,
+            observations, failures, breakthroughs, and conversations from
+            the KREST ecosystem.
+          </p>
+
           <button
             onClick={() => setWriteOpen(true)}
-            className="flex-shrink-0 inline-flex items-center gap-2 bg-black text-brand-700 font-semibold
-                       px-6 py-3 rounded-xl hover:bg-brand-50 transition-colors shadow-sm"
+            className="mt-12 inline-flex items-center gap-3 bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.15em] text-slate-900 transition-all duration-300 hover:gap-5"
           >
-            <PenLine size={16} /> Write a blog
+            Write a Blog
+            <ArrowRight size={16} />
           </button>
         </div>
       </section>
 
-      {/* Filters */}
-      <div className="border-b border-gray-100 bg-gray-50 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex gap-3 flex-wrap items-center">
-          <div className="relative flex-1 min-w-52">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      {/* FILTERS */}
+      <section className="border-b border-black/5 bg-white py-8">
+
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-4 px-6 lg:px-16">
+
+          {/* SEARCH */}
+          <div className="relative min-w-[280px] flex-1">
+
+            <Search
+              size={16}
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
             <input
-              value={search} onChange={e => setSearch(e.target.value)}
-              className="input pl-8 text-sm" placeholder="Search blogs…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search articles..."
+              className="w-full border border-black/5 bg-slate-50 py-4 pl-14 pr-5 text-sm outline-none transition-all duration-300 focus:border-slate-900"
             />
           </div>
-          {allCategories.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <Tag size={13} className="text-gray-400" />
-              <button
-                onClick={() => setCategory('')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                  !category ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                }`}
-              >All</button>
-              {allCategories.map(c => (
-                <button
-                  key={c} onClick={() => setCategory(c === category ? '' : c)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                    category === c ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                  }`}
-                >{c}</button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* Blog grid */}
-      <section className="max-w-5xl mx-auto px-6 py-12">
-        {isLoading ? (
-          <PageSpinner />
-        ) : blogs.length === 0 ? (
-          <EmptyState
-            icon={PenLine}
-            title="No blog posts yet"
-            description="Be the first to share your research story with the UGRP community."
-            action={
-              <button onClick={() => setWriteOpen(true)} className="btn-primary">
-                Write the first blog
+          {/* CATEGORIES */}
+          <div className="flex flex-wrap gap-3">
+
+            <button
+              onClick={() => setCategory('')}
+              className={`px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 ${
+                category === ''
+                  ? 'bg-slate-900 text-white'
+                  : 'border border-black/5 bg-white text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              All
+            </button>
+
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() =>
+                  setCategory(category === cat ? '' : cat)
+                }
+                className={`px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 ${
+                  category === cat
+                    ? 'bg-slate-900 text-white'
+                    : 'border border-black/5 bg-white text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {cat}
               </button>
-            }
-          />
-        ) : (
-          <>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-6">
-              {blogs.length} post{blogs.length !== 1 ? 's' : ''}
-            </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {blogs.map(b => <BlogCard key={b.id} blog={b} />)}
-            </div>
-          </>
-        )}
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Write modal */}
-      <Modal open={writeOpen} onClose={() => setWriteOpen(false)} title="Write a blog post" size="lg">
+      {/* BLOGS */}
+      <section className="py-24">
+
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-16">
+
+          {isLoading ? (
+            <PageSpinner />
+          ) : blogs.length === 0 ? (
+            <EmptyState
+              icon={PenLine}
+              title="No blog posts yet"
+              description="Be the first to contribute to the KREST Journal."
+              action={
+                <button
+                  onClick={() => setWriteOpen(true)}
+                  className="bg-slate-900 px-8 py-4 text-sm font-semibold uppercase tracking-[0.15em] text-white"
+                >
+                  Write First Blog
+                </button>
+              }
+            />
+          ) : (
+            <>
+              <div className="mb-12 flex items-center justify-between">
+
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+                    Published Articles
+                  </p>
+
+                  <h2 className="mt-4 text-5xl font-semibold tracking-[-0.05em] text-slate-900">
+                    {blogs.length} Articles
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                {blogs.map(blog => (
+                  <BlogCard key={blog.id} blog={blog} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* MODAL */}
+      <Modal
+        open={writeOpen}
+        onClose={() => setWriteOpen(false)}
+        title="Write a Blog"
+        size="lg"
+      >
         <WriteBlogForm onClose={() => setWriteOpen(false)} />
       </Modal>
     </div>
