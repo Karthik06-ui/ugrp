@@ -119,7 +119,7 @@ export default function ProjectForm({ initial = {}, onSubmit, loading }) {
       </div>
 
       {/* ── Deadline (recommended for industry) ───────────────────────── */}
-      <div>
+      {/* <div>
         <label className="label">
           Deadline
           {isIndustry
@@ -135,7 +135,7 @@ export default function ProjectForm({ initial = {}, onSubmit, loading }) {
           className="input"
           min={new Date().toISOString().split('T')[0]}
         />
-      </div>
+      </div> */}
 
       {/* ── Status ────────────────────────────────────────────────────── */}
       <div>

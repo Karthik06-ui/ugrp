@@ -50,11 +50,10 @@ class Proposal(models.Model):
     )
 
     # ── Proposal content ──────────────────────────────────────────────────────
-    message    = models.TextField(help_text='Cover letter / motivation for applying.')
+    message    = models.TextField(blank=True, default='', help_text='Cover letter / motivation for applying.')
     attachment = models.FileField(
         upload_to=proposal_upload_path,
-        null=True, blank=True,
-        help_text='Optional resume, transcript, or recommendation letter (PDF/DOC, max 5 MB).',
+        help_text='Required resume, transcript, or recommendation letter (PDF/DOC, max 5 MB).',
     )
 
     status     = models.CharField(

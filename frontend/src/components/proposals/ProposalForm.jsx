@@ -77,6 +77,7 @@ export default function ProposalForm({ projectId, onSubmit, loading }) {
       return
     }
     setAttachment(file)
+    if (errors.attachment) setErrors(e => ({ ...e, attachment: '' }))
   }
 
   function onFileInput(e) {
@@ -102,7 +103,8 @@ export default function ProposalForm({ projectId, onSubmit, loading }) {
     if (!form.applicant_email.trim())      e.applicant_email      = 'Email is required.'
     if (!form.applicant_department.trim()) e.applicant_department = 'Department is required.'
     if (!form.applicant_year)              e.applicant_year       = 'Year is required.'
-    if (!form.message.trim())              e.message              = 'Cover message is required.'
+    if (!attachment)                       e.attachment           = 'Attachment file is required.'
+    // if (!form.message.trim())              e.message              = 'Cover message is required.'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -208,7 +210,7 @@ export default function ProposalForm({ projectId, onSubmit, loading }) {
           <FileText size={11} /> Proposal content
         </p>
 
-        {/* Cover message */}
+        {/* Cover message
         <div className="mb-4">
           <label className="label">Cover message *</label>
           <textarea
@@ -224,13 +226,14 @@ export default function ProposalForm({ projectId, onSubmit, loading }) {
             <p className="text-xs text-gray-400 ml-auto">{form.message.length} characters</p>
           </div>
         </div>
+        */}
 
         {/* File upload */}
         <div>
           <label className="label">
-            Attachment
+            Attachment *
             <span className="ml-1 normal-case font-normal text-gray-400">
-              (optional — resume, transcript, or recommendation)
+              (required — resume, transcript, or recommendation)
             </span>
           </label>
 
@@ -285,6 +288,11 @@ export default function ProposalForm({ projectId, onSubmit, loading }) {
           {fileError && (
             <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
               <X size={11} /> {fileError}
+            </p>
+          )}
+          {errors.attachment && (
+            <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+              <X size={11} /> {errors.attachment}
             </p>
           )}
         </div>
