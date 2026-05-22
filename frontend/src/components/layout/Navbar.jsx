@@ -304,19 +304,20 @@ return (
             Explore Projects
           </Link>
 
-          <button
+          <Link
+            to={isLoggedIn ? '/profile' : '/login'}
             aria-label="Account"
             style={iconBtnStyle(scrolled)}
           >
             <User size={20} />
-          </button>
+          </Link>
 
-          <button
+          {/* <button
             aria-label="Search"
             style={iconBtnStyle(scrolled)}
           >
             <Search size={20} />
-          </button>
+          </button> */}
 
           {/* MOBILE MENU BUTTON */}
           <button

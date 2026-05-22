@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import {
   ArrowRight,
   GraduationCap,
@@ -85,20 +86,20 @@ export default function StudentsFacultyPage() {
 
               <div className="mt-12 flex flex-wrap gap-5">
 
-                <a
-                  href="/programs/reflect"
+                <Link
+                  to="/programs/reflect"
                   className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-semibold text-slate-900 transition-all duration-300 hover:gap-5"
                 >
                   Begin with REFLECT
                   <ArrowRight size={18} />
-                </a>
+                </Link>
 
-                <a
-                  href="/about"
+                <Link
+                  to="/about"
                   className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10"
                 >
                   Explore KREST
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -222,13 +223,13 @@ export default function StudentsFacultyPage() {
               ))}
             </div>
 
-            <a
-              href="/programs/reflect"
+            <Link
+              to="/programs/reflect"
               className="group mt-14 inline-flex items-center gap-3 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:gap-5"
             >
               Apply to KREST
               <ArrowRight size={18} />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -366,20 +367,20 @@ export default function StudentsFacultyPage() {
 
           <div className="mt-14 flex flex-wrap items-center justify-center gap-5">
 
-            <a
-              href="/programs"
+            <Link
+              to="/explore"
               className="inline-flex items-center gap-3 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:gap-5"
             >
               Explore Programs
               <ArrowRight size={18} />
-            </a>
+            </Link>
 
-            <a
-              href="/about"
+            <Link
+              to="/about"
               className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-white px-8 py-4 text-sm font-semibold text-slate-700 transition-all duration-300 hover:bg-slate-50"
             >
               About KREST
-            </a>
+            </Link>
           </div>
         </div>
       </section>

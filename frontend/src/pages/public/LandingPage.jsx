@@ -1,5 +1,6 @@
 import Navbar from "../../components/layout/Navbar";
 import heroVideo from "../../assets/hero.mp4";
+import { Link } from "react-router-dom";
 
 import {
   ArrowRight,
@@ -88,20 +89,20 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-12 flex flex-wrap gap-4">
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 font-medium hover:bg-cyan-300 transition"
               >
                 Explore Research
                 <ArrowRight size={16} />
-              </a>
+              </Link>
 
-              <a
-                href="/about"
+              <Link
+                to="/about"
                 className="border border-white/20 px-6 py-3 hover:bg-white/5 transition"
               >
                 Learn More
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -165,13 +166,13 @@ export default function LandingPage() {
                     {p.desc}
                   </p>
 
-                  <a
-                    href={`/${p.title.toLowerCase()}`}
+                  <Link
+                    to={`/programs/${p.title.toLowerCase()}`}
                     className="mt-10 inline-flex items-center gap-2 text-cyan-400"
                   >
                     Explore Program
                     <ArrowRight size={16} />
-                  </a>
+                  </Link>
                 </div>
               );
             })}
@@ -230,19 +231,19 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-12 flex justify-center gap-4 flex-wrap">
-            <a
-              href="/register"
+            <Link
+              to="/register"
               className="bg-white text-black px-8 py-4 font-medium hover:bg-cyan-300 transition"
             >
               Join KREST
-            </a>
+            </Link>
 
-            <a
-              href="/projects"
+            {/* <Link
+              to="/projects"
               className="border border-white/20 px-8 py-4 hover:bg-white/5 transition"
             >
               Browse Projects
-            </a>
+            </Link> */}
           </div>
         </div>
       </section>
@@ -259,21 +260,21 @@ export default function LandingPage() {
           </div>
 
           <div className="flex gap-10 text-sm text-white/50">
-            <a href="/about" className="hover:text-white">
+            <Link to="/about" className="hover:text-white">
               About
-            </a>
+            </Link>
 
-            <a href="/projects" className="hover:text-white">
+            <Link to="/projects" className="hover:text-white">
               Projects
-            </a>
+            </Link>
 
-            <a href="/blogs" className="hover:text-white">
+            <Link to="/blog" className="hover:text-white">
               Blogs
-            </a>
+            </Link>
 
-            <a href="/contact" className="hover:text-white">
+            <Link to="/contact" className="hover:text-white">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
       </footer>

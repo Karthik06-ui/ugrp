@@ -62,12 +62,7 @@ export default function RegisterPage() {
 
       toast.success('Account created successfully!')
 
-      navigate(
-        data.role === 'student'
-          ? '/student/dashboard'
-          : '/mentor/dashboard',
-        { replace: true }
-      )
+      navigate('/profile', { replace: true })
 
     } catch (err) {
       const errors = err.response?.data

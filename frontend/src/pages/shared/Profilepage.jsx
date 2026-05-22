@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { User, Save } from 'lucide-react'
+import { User, Save, AlertTriangle } from 'lucide-react'
 import { getStudentProfile, updateStudentProfile, getMentorProfile, updateMentorProfile } from '../../api/profiles'
 import PageWrapper from '../../components/layout/PageWrapper'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { useAuth } from '../../hooks/useAuth'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+import { isProfileComplete } from '../../components/auth/ProfileCompletionGuard'
 
 const YEARS = [1, 2, 3, 4]
 const DESIGNATIONS = ['Professor', 'Associate Professor', 'Assistant Professor', 'Lecturer', 'Researcher']
@@ -25,9 +27,19 @@ export default function ProfilePage() {
     if (profile) setForm(profile)
   }, [profile])
 
+  const navigate = useNavigate()
+  const dashPath = isStudent ? '/student/dashboard' : '/mentor/dashboard'
+
   const mut = useMutation({
     mutationFn: (d) => isStudent ? updateStudentProfile(d) : updateMentorProfile(d),
-    onSuccess: () => { toast.success('Profile updated'); qc.invalidateQueries(['profile']) },
+    onSuccess: (res) => {
+      toast.success('Profile updated')
+      qc.invalidateQueries({ queryKey: ['profile', user?.role] })
+      const updatedProfile = res?.data || form
+      if (isProfileComplete(updatedProfile, user?.role)) {
+        navigate(dashPath)
+      }
+    },
     onError: e => {
       const errors = e.response?.data
       const first  = errors && Object.values(errors).flat()[0]
@@ -45,6 +57,19 @@ export default function ProfilePage() {
   return (
     <PageWrapper title="My profile" subtitle="Update your personal and academic information">
       <div className="max-w-xl">
+        {!isProfileComplete(profile, user?.role) && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-start gap-3 shadow-sm animate-pulse">
+            <div className="p-1 bg-amber-100 rounded-lg text-amber-700 mt-0.5">
+              <AlertTriangle size={18} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-900 text-sm">Profile Completion Required</h4>
+              <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                Please fill in all the mandatory fields (*). Completing your profile is required to access your dashboard and other features of the KREST platform.
+              </p>
+            </div>
+          </div>
+        )}
         <div className="card p-6">
           {/* Avatar */}
           <div className="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100">
@@ -59,28 +84,28 @@ export default function ProfilePage() {
 
           <form onSubmit={e => { e.preventDefault(); mut.mutate(form) }} className="space-y-4">
             <div>
-              <label className="label">Full name</label>
-              <input name="name" value={form.name || ''} onChange={handle} className="input" placeholder="Dr. Jane Smith" />
+              <label className="label">Full name <span className="text-red-500">*</span></label>
+              <input name="name" value={form.name || ''} onChange={handle} required className="input" placeholder="Dr. Jane Smith" />
             </div>
 
             {isStudent && (
               <>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="label">Roll number</label>
-                    <input name="roll_number" value={form.roll_number || ''} onChange={handle} className="input" placeholder="CS2024001" />
+                    <label className="label">Roll number <span className="text-red-500">*</span></label>
+                    <input name="roll_number" value={form.roll_number || ''} onChange={handle} required className="input" placeholder="CS2024001" />
                   </div>
                   <div>
-                    <label className="label">Year</label>
-                    <select name="year" value={form.year || ''} onChange={handle} className="input">
+                    <label className="label">Year <span className="text-red-500">*</span></label>
+                    <select name="year" value={form.year || ''} onChange={handle} required className="input">
                       <option value="">Select year</option>
                       {YEARS.map(y => <option key={y} value={y}>Year {y}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="label">Department</label>
-                  <input name="department" value={form.department || ''} onChange={handle} className="input" placeholder="Computer Science" />
+                  <label className="label">Department <span className="text-red-500">*</span></label>
+                  <input name="department" value={form.department || ''} onChange={handle} required className="input" placeholder="Computer Science" />
                 </div>
                 <div>
                   <label className="label">Skills <span className="text-gray-400 normal-case font-normal">(comma-separated)</span></label>
@@ -100,12 +125,12 @@ export default function ProfilePage() {
             {isMentor && (
               <>
                 <div>
-                  <label className="label">Department</label>
-                  <input name="department" value={form.department || ''} onChange={handle} className="input" placeholder="Computer Science" />
+                  <label className="label">Department <span className="text-red-500">*</span></label>
+                  <input name="department" value={form.department || ''} onChange={handle} required className="input" placeholder="Computer Science" />
                 </div>
                 <div>
-                  <label className="label">Designation</label>
-                  <select name="designation" value={form.designation || ''} onChange={handle} className="input">
+                  <label className="label">Designation <span className="text-red-500">*</span></label>
+                  <select name="designation" value={form.designation || ''} onChange={handle} required className="input">
                     <option value="">Select designation</option>
                     {DESIGNATIONS.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>

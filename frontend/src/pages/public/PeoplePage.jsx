@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const mentors = [
   { name: 'Dr. Priya Ramesh',   role: 'Professor of Computer Science',     dept: 'CSE',      research: 'Machine Learning, NLP',               initial: 'PR', color: 'bg-brand-50 text-brand-700' },
   { name: 'Dr. Karthik Menon',  role: 'Associate Professor',               dept: 'ECE',      research: 'Signal Processing, IoT',              initial: 'KM', color: 'bg-coral-50 text-coral-700' },
@@ -84,8 +86,8 @@ export default function PeoplePage() {
           Faculty can create research projects. Students can apply and collaborate. Everyone can read and write on our blog.
         </p>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <a href="/register" className="btn-primary px-6 py-2.5">Join UGRP</a>
-          <a href="/blogs"     className="btn-secondary px-6 py-2.5">Read the blog</a>
+          <Link to="/register" className="btn-primary px-6 py-2.5">Join UGRP</Link>
+          <Link to="/blog"     className="btn-secondary px-6 py-2.5">Read the blog</Link>
         </div>
       </section>
     </div>

@@ -96,7 +96,7 @@ export default function ReflectPage() {
                 <div className="mt-12 flex flex-wrap gap-4">
 
                   <Link
-                    to="/apply"
+                    to="/login"
                     className="group inline-flex items-center gap-3 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:gap-5"
                   >
                     Apply to Begin REFLECT
@@ -350,7 +350,7 @@ export default function ReflectPage() {
             </div>
 
             <Link
-              to="/apply"
+              to="/login"
               className="group mt-12 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-semibold text-slate-900 transition-all duration-300 hover:gap-5"
             >
               Apply to Begin REFLECT

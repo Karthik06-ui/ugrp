@@ -9,6 +9,7 @@ import Sidebar from './components/layout/Sidebar'
 // Auth guards
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import RoleRoute      from './components/auth/RoleRoute'
+import ProfileCompletionGuard from './components/auth/ProfileCompletionGuard'
 
 // Public pages — no login required
 import LandingPage   from './pages/public/LandingPage'
@@ -120,36 +121,39 @@ export default function App() {
       {/* ── Authenticated shell: Navbar + Sidebar ────────────────────────── */}
       <Route element={<AppShell />}>
 
-        {/* Public inside shell — no login needed */}
-        <Route path="/projects"     element={<ProjectsPage />} />
-        <Route path="/projects/:id" element={<ProjectDetailPage />} />
-
-        {/* Login required */}
+        {/* Profile page itself does NOT require completion guard */}
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
-        {/* Student only */}
-        <Route path="/student/dashboard"   element={<RoleRoute role="student"><StudentDashboard /></RoleRoute>} />
-        <Route path="/student/proposals"   element={<RoleRoute role="student"><MyProposals /></RoleRoute>} />
-        <Route path="/student/enrollments" element={<RoleRoute role="student"><MyEnrollments /></RoleRoute>} />
-        <Route path="/student/tasks"       element={<RoleRoute role="student"><MyTasks /></RoleRoute>} />
-        <Route path="/student/reviews"     element={<RoleRoute role="student"><MyReviews /></RoleRoute>} />
-        <Route path="/student/remarks"     element={<RoleRoute role="student"><ProjectRemarks /></RoleRoute>} />
+        {/* Require completed profile to access any of the following */}
+        <Route element={<ProfileCompletionGuard />}>
+          {/* Login required */}
+          <Route path="/projects"     element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
+          <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetailPage /></ProtectedRoute>} />
 
-        {/* Mentor only */}
-        <Route path="/mentor/dashboard"    element={<RoleRoute role="mentor"><MentorDashboard /></RoleRoute>} />
-        <Route path="/mentor/projects"     element={<RoleRoute role="mentor"><MyProjects /></RoleRoute>} />
-        <Route path="/mentor/projects/new" element={<RoleRoute role="mentor"><CreateProject /></RoleRoute>} />
-        <Route path="/mentor/proposals"    element={<RoleRoute role="mentor"><ProposalsInbox /></RoleRoute>} />
-        <Route path="/mentor/tasks"        element={<RoleRoute role="mentor"><ManageTasks /></RoleRoute>} />
-        <Route path="/mentor/reviews"      element={<RoleRoute role="mentor"><WriteReviews /></RoleRoute>} />
-        <Route path="/mentor/remarks"      element={<RoleRoute role="mentor"><PostRemarks /></RoleRoute>} />
+          {/* Student only */}
+          <Route path="/student/dashboard"   element={<RoleRoute role="student"><StudentDashboard /></RoleRoute>} />
+          <Route path="/student/proposals"   element={<RoleRoute role="student"><MyProposals /></RoleRoute>} />
+          <Route path="/student/enrollments" element={<RoleRoute role="student"><MyEnrollments /></RoleRoute>} />
+          <Route path="/student/tasks"       element={<RoleRoute role="student"><MyTasks /></RoleRoute>} />
+          <Route path="/student/reviews"     element={<RoleRoute role="student"><MyReviews /></RoleRoute>} />
+          <Route path="/student/remarks"     element={<RoleRoute role="student"><ProjectRemarks /></RoleRoute>} />
 
-        {/* Smart redirect */}
-        <Route path="/dashboard" element={
-          isLoggedIn
-            ? <Navigate to={dashPath} replace />
-            : <Navigate to="/login" replace />
-        } />
+          {/* Mentor only */}
+          <Route path="/mentor/dashboard"    element={<RoleRoute role="mentor"><MentorDashboard /></RoleRoute>} />
+          <Route path="/mentor/projects"     element={<RoleRoute role="mentor"><MyProjects /></RoleRoute>} />
+          <Route path="/mentor/projects/new" element={<RoleRoute role="mentor"><CreateProject /></RoleRoute>} />
+          <Route path="/mentor/proposals"    element={<RoleRoute role="mentor"><ProposalsInbox /></RoleRoute>} />
+          <Route path="/mentor/tasks"        element={<RoleRoute role="mentor"><ManageTasks /></RoleRoute>} />
+          <Route path="/mentor/reviews"      element={<RoleRoute role="mentor"><WriteReviews /></RoleRoute>} />
+          <Route path="/mentor/remarks"      element={<RoleRoute role="mentor"><PostRemarks /></RoleRoute>} />
+
+          {/* Smart redirect */}
+          <Route path="/dashboard" element={
+            isLoggedIn
+              ? <Navigate to={dashPath} replace />
+              : <Navigate to="/login" replace />
+          } />
+        </Route>
 
         {/* 404 */}
         <Route path="*" element={
