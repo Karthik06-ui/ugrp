@@ -7,6 +7,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     project_type_label = serializers.CharField(
         source='get_project_type_display', read_only=True
     )
+    document          = serializers.FileField(required=False, allow_null=True)
+    document_url      = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model  = Project
@@ -16,12 +18,44 @@ class ProjectSerializer(serializers.ModelSerializer):
             'status',
             'project_type', 'project_type_label',
             'industry_name', 'deadline',
+            'document', 'document_url',
             'created_at',
         )
         read_only_fields = (
             'id', 'mentor', 'mentor_email',
             'project_type_label', 'created_at',
+            'document_url',
         )
+
+    def get_document_url(self, obj):
+        if obj.document:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.document.url) if request else obj.document.url
+        return None
+
+    def validate_document(self, file):
+        if not file:
+            return file
+        
+        # If it is a string (e.g. empty string or "null" from frontend to clear the file)
+        if isinstance(file, str):
+            if file.lower() in ('', 'null', 'none'):
+                return None
+            return file
+
+        name = file.name.lower()
+        ext  = name.rsplit('.', 1)[-1] if '.' in name else ''
+        allowed_extensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
+        if ext not in allowed_extensions:
+            raise serializers.ValidationError(
+                f'Unsupported file type ".{ext}". Allowed: {", ".join(allowed_extensions)}.'
+            )
+        max_file_size_mb = 20
+        if file.size > max_file_size_mb * 1024 * 1024:
+            raise serializers.ValidationError(
+                f'File too large. Maximum allowed: {max_file_size_mb} MB.'
+            )
+        return file
 
     def validate(self, attrs):
         project_type  = attrs.get('project_type',  self.instance.project_type  if self.instance else Project.ProjectType.ACADEMIC)

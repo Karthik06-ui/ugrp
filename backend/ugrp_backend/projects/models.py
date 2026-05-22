@@ -2,6 +2,11 @@ from django.db import models
 from django.conf import settings
 
 
+def project_upload_path(instance, filename):
+    """Uploads to: media/projects/<mentor_id>/<filename>"""
+    return f'projects/{instance.mentor_id}/{filename}'
+
+
 class Project(models.Model):
     """
     A research project created by a mentor.
@@ -48,6 +53,12 @@ class Project(models.Model):
         null=True,
         blank=True,
         help_text='Application or project deadline. Recommended for industry projects.',
+    )
+    document = models.FileField(
+        upload_to=project_upload_path,
+        null=True,
+        blank=True,
+        help_text='Detailed project specification document (PDF/DOC, max 20 MB).',
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

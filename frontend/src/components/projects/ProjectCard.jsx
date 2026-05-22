@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Calendar, User, Building2, BookOpen, Clock } from 'lucide-react'
+import { Calendar, User, Building2, BookOpen, Clock, Paperclip } from 'lucide-react'
 import Badge from '../ui/Badge'
 import { format } from 'date-fns'
 
@@ -72,6 +72,12 @@ export default function ProjectCard({ project, actions }) {
           }`}>
             <Clock size={12} />
             {isOverdue ? 'Expired' : format(new Date(project.deadline), 'MMM d, yyyy')}
+          </span>
+        )}
+        {project.document_url && (
+          <span className="flex items-center gap-1 text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded-md">
+            <Paperclip size={11} />
+            <span>Details attached</span>
           </span>
         )}
       </div>
