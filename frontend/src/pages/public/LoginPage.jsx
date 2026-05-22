@@ -5,6 +5,7 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ArrowLeft,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { login } from '../../api/auth'
@@ -163,6 +164,17 @@ export default function LoginPage() {
         <div className="flex items-center justify-center px-6 py-12">
 
           <div className="w-full max-w-md">
+
+            {/* BACK TO HOME */}
+            <div className="mb-6">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                <ArrowLeft size={16} />
+                Back to home
+              </Link>
+            </div>
 
             {/* MOBILE LOGO */}
             <div className="lg:hidden text-center mb-10">

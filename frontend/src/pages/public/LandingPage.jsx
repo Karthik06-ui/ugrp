@@ -1,6 +1,7 @@
 import Navbar from "../../components/layout/Navbar";
 import heroVideo from "../../assets/hero.mp4";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 import {
   ArrowRight,
@@ -41,9 +42,10 @@ const stats = [
 ];
 
 export default function LandingPage() {
+  const { isLoggedIn } = useAuth();
   return (
     <div className="bg-[#071019] text-white overflow-hidden">
-      <Navbar />
+      <Navbar variant="public" />
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-center border-b border-white/10">
@@ -90,12 +92,28 @@ export default function LandingPage() {
 
             <div className="mt-12 flex flex-wrap gap-4">
               <Link
-                to="/login"
-                className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 font-medium hover:bg-cyan-300 transition"
+                to="/dashboard"
+                className="inline-flex items-center gap-2 bg-cyan-400 text-black px-6 py-3 font-medium hover:bg-cyan-300 transition"
               >
-                Explore Research
+                {isLoggedIn ? "Go to Dashboard" : "Dashboard"}
                 <ArrowRight size={16} />
               </Link>
+
+              {!isLoggedIn ? (
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 font-medium hover:bg-gray-200 transition"
+                >
+                  Explore Research
+                </Link>
+              ) : (
+                <Link
+                  to="/projects"
+                  className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 font-medium hover:bg-gray-200 transition"
+                >
+                  Explore Projects
+                </Link>
+              )}
 
               <Link
                 to="/about"
@@ -238,12 +256,12 @@ export default function LandingPage() {
               Join KREST
             </Link>
 
-            {/* <Link
+            <Link
               to="/projects"
               className="border border-white/20 px-8 py-4 hover:bg-white/5 transition"
             >
               Browse Projects
-            </Link> */}
+            </Link>
           </div>
         </div>
       </section>

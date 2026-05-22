@@ -65,7 +65,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar onMenuToggle={() => setMenuOpen(o => !o)} menuOpen={menuOpen} />
+      <Navbar variant="auth" onMenuToggle={() => setMenuOpen(o => !o)} menuOpen={menuOpen} />
       <div className="flex flex-1 overflow-hidden">
         {isLoggedIn && <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />}
         <main className="flex-1 overflow-y-auto min-w-0">
@@ -80,7 +80,7 @@ function AppShell() {
 function PublicShell() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
+      <Navbar variant="public" />
       <main className="flex-1">
         <Outlet />
       </main>

@@ -97,6 +97,16 @@ export default function KripPage() {
               inquiry, scholarly discipline, and meaningful research output —
               not a conventional internship or observational experience.
             </p>
+
+            <div className="mt-10">
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-3 rounded-full bg-fuchsia-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-fuchsia-600 hover:gap-5"
+              >
+                Start KRIP
+                <ArrowRight size={18} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -325,6 +335,7 @@ export default function KripPage() {
           </div>
 
           {/* CTA */}
+          {/*
           <div className="mt-24 overflow-hidden rounded-[42px] bg-gradient-to-br from-fuchsia-600 to-purple-600 p-14 text-white shadow-[0_40px_100px_rgba(168,85,247,0.25)]">
 
             <div className="max-w-5xl">
@@ -350,6 +361,17 @@ export default function KripPage() {
                 <ArrowRight size={18} />
               </Link>
             </div>
+          </div>
+          */}
+
+          <div className="mt-16 flex justify-center">
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-3 rounded-full bg-fuchsia-600 px-10 py-5 text-base font-semibold text-white transition-all duration-300 hover:bg-fuchsia-700 hover:gap-5 shadow-lg shadow-fuchsia-500/20"
+            >
+              Start KRIP
+              <ArrowRight size={20} />
+            </Link>
           </div>
         </div>
       </section>

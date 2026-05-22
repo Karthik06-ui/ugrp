@@ -6,6 +6,7 @@ import {
   X,
   Search,
   ChevronDown,
+  Home,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../hooks/useAuth'
@@ -57,7 +58,7 @@ const publicLinks = [
   },
 ]
 
-export default function Navbar({ onMenuToggle, menuOpen }) {
+export default function Navbar({ onMenuToggle, menuOpen, variant }) {
   const { user, isLoggedIn, isStudent, logout } = useAuth()
 
   const navigate = useNavigate()
@@ -106,18 +107,20 @@ export default function Navbar({ onMenuToggle, menuOpen }) {
      AUTH NAVBAR
   ────────────────────────────────────────────────────────────── */
 
-  if (isLoggedIn) {
+  if (variant === 'auth') {
     return (
       <header className="sticky top-0 z-40 bg-[#E8EFF4] border-b border-[#D0D8E0]">
         <div className="h-14 flex items-center px-4 gap-3">
 
-          <button
-            onClick={onMenuToggle}
-            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg
-            hover:bg-[#D0D8E0] text-[#2E5C90] transition-colors"
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          {onMenuToggle && (
+            <button
+              onClick={onMenuToggle}
+              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg
+              hover:bg-[#D0D8E0] text-[#2E5C90] transition-colors"
+            >
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          )}
 
           <Link
             to={dashboardPath}
@@ -155,9 +158,19 @@ export default function Navbar({ onMenuToggle, menuOpen }) {
             </span>
 
             <Link
+              to="/"
+              className="w-9 h-9 flex items-center justify-center rounded-lg
+              hover:bg-[#D0D8E0] text-[#2E5C90] transition-colors"
+              title="Home"
+            >
+              <Home size={17} />
+            </Link>
+
+            <Link
               to="/profile"
               className="w-9 h-9 flex items-center justify-center rounded-lg
               hover:bg-[#D0D8E0] text-[#2E5C90] transition-colors"
+              title="Profile"
             >
               <User size={17} />
             </Link>
@@ -166,6 +179,7 @@ export default function Navbar({ onMenuToggle, menuOpen }) {
               onClick={handleLogout}
               className="w-9 h-9 flex items-center justify-center rounded-lg
               hover:bg-[#FFE8E8] text-[#02A9DB] transition-colors"
+              title="Logout"
             >
               <LogOut size={17} />
             </button>
@@ -406,23 +420,49 @@ return (
         {/* BUTTONS */}
         <div className="pt-6 border-t border-[#E5EAF0] flex flex-col gap-3">
 
-          <Link
-            to="/login"
-            onClick={() => setMobileNav(false)}
-            className="w-full py-3 rounded-xl border border-[#D0D8E0]
-            text-center text-sm font-medium text-[#2E5C90]"
-          >
-            Log in
-          </Link>
+          {!isLoggedIn ? (
+            <>
+              <Link
+                to="/login"
+                onClick={() => setMobileNav(false)}
+                className="w-full py-3 rounded-xl border border-[#D0D8E0]
+                text-center text-sm font-medium text-[#2E5C90]"
+              >
+                Log in
+              </Link>
 
-          <Link
-            to="/register"
-            onClick={() => setMobileNav(false)}
-            className="w-full py-3 rounded-xl bg-[#022B59]
-            text-center text-sm font-semibold text-white"
-          >
-            Sign up
-          </Link>
+              <Link
+                to="/register"
+                onClick={() => setMobileNav(false)}
+                className="w-full py-3 rounded-xl bg-[#022B59]
+                text-center text-sm font-semibold text-white"
+              >
+                Sign up
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileNav(false)}
+                className="w-full py-3 rounded-xl bg-[#022B59]
+                text-center text-sm font-semibold text-white"
+              >
+                Dashboard
+              </Link>
+
+              <button
+                onClick={() => {
+                  setMobileNav(false);
+                  handleLogout();
+                }}
+                className="w-full py-3 rounded-xl border border-[#FFE8E8] hover:bg-[#FFE8E8]
+                text-center text-sm font-medium text-red-500 transition-colors"
+              >
+                Log out
+              </button>
+            </>
+          )}
 
         </div>
 
