@@ -208,7 +208,28 @@ if 'RENDER' in os.environ:
 
     # Cloudinary — media file storage (images, resume uploads)
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+    from cloudinary_storage.storage import MediaCloudinaryStorage
+
+    class AutoResourceCloudinaryStorage(MediaCloudinaryStorage):
+        def _get_resource_type(self, name):
+            # Determine resource type dynamically by extension
+            ext = name.split('.')[-1].lower() if '.' in name else None
+            if ext is None:
+                # Fallback to base RESOURCE_TYPE ('image') for backwards compatibility
+                return self.RESOURCE_TYPE
+            
+            # Common image extensions
+            if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'ico', 'heic']:
+                return 'image'
+            # Common video and audio extensions
+            elif ext in ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'wmv', 'mpeg', '3gp', 'mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac']:
+                return 'video'
+            # Fallback for all other files (PDFs, docx, zip, txt, etc.)
+            else:
+                return 'raw'
+
+    DEFAULT_FILE_STORAGE = 'ugrp_backend.settings.AutoResourceCloudinaryStorage'
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
         'API_KEY':    os.environ['CLOUDINARY_API_KEY'],
@@ -218,7 +239,7 @@ if 'RENDER' in os.environ:
     STORAGES = {
         'default': {
             # All uploaded media (blog images, proposal attachments) → Cloudinary
-            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+            'BACKEND': 'ugrp_backend.settings.AutoResourceCloudinaryStorage',
         },
         'staticfiles': {
             # Static files (CSS, JS) → WhiteNoise

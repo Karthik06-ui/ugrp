@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Project
+from .models import Project, Team, TeamMember
+from enrollments.serializers import EnrollmentSerializer
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -9,6 +10,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     )
     document          = serializers.FileField(required=False, allow_null=True)
     document_url      = serializers.SerializerMethodField(read_only=True)
+    enrollments       = EnrollmentSerializer(many=True, read_only=True)
 
     class Meta:
         model  = Project
@@ -19,12 +21,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_type', 'project_type_label',
             'industry_name', 'deadline',
             'document', 'document_url',
+            'enrollments',
             'created_at',
         )
         read_only_fields = (
             'id', 'mentor', 'mentor_email',
             'project_type_label', 'created_at',
-            'document_url',
+            'document_url', 'enrollments',
         )
 
     def get_document_url(self, obj):
@@ -32,6 +35,19 @@ class ProjectSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             return request.build_absolute_uri(obj.document.url) if request else obj.document.url
         return None
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            rep.pop('enrollments', None)
+            return rep
+
+        is_mentor = request.user == instance.mentor
+        is_enrolled = instance.enrollments.filter(student=request.user).exists()
+        if not (is_mentor or is_enrolled):
+            rep.pop('enrollments', None)
+        return rep
 
     def validate_document(self, file):
         if not file:
@@ -77,3 +93,32 @@ class ProjectSerializer(serializers.ModelSerializer):
         if value not in (Project.Status.OPEN, Project.Status.CLOSED):
             raise serializers.ValidationError('status must be "open" or "closed".')
         return value
+
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    role_label = serializers.CharField(source='get_role_display', read_only=True)
+    invitation_status_label = serializers.CharField(source='get_invitation_status_display', read_only=True)
+
+    class Meta:
+        model = TeamMember
+        fields = (
+            'id', 'team', 'user', 'name', 'email', 'roll_number', 
+            'department', 'role', 'role_label', 'invitation_status', 
+            'invitation_status_label', 'joined_at'
+        )
+        read_only_fields = ('id', 'team', 'user', 'role_label', 'invitation_status_label', 'joined_at')
+
+    def validate_role(self, value):
+        if value not in TeamMember.Role.values:
+            raise serializers.ValidationError(f"Invalid role choices. Allowed: {TeamMember.Role.values}")
+        return value
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    members = TeamMemberSerializer(many=True, read_only=True)
+    leader_email = serializers.EmailField(source='leader.email', read_only=True)
+
+    class Meta:
+        model = Team
+        fields = ('id', 'name', 'leader', 'leader_email', 'members', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'leader', 'leader_email', 'created_at', 'updated_at')

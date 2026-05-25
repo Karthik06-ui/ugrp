@@ -27,9 +27,23 @@ class Proposal(models.Model):
 
     student    = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='proposals',
         limit_choices_to={'role': 'student'},
+    )
+    application_type = models.CharField(
+        max_length=20,
+        choices=[('individual', 'Individual'), ('team', 'Team')],
+        default='individual',
+    )
+    team = models.ForeignKey(
+        'projects.Team',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='proposals',
     )
     project    = models.ForeignKey(
         'projects.Project',
@@ -61,6 +75,8 @@ class Proposal(models.Model):
         choices=Status.choices,
         default=Status.PENDING,
     )
+    mentor_feedback = models.TextField(default='', blank=True)
+    is_draft        = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

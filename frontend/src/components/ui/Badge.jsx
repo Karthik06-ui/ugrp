@@ -9,10 +9,12 @@ const variants = {
   done:        'bg-teal-50   text-teal-700   border-teal-200',
   student:     'bg-teal-50   text-teal-700   border-teal-200',
   mentor:      'bg-coral-50  text-coral-700  border-coral-200',
+  draft:       'bg-slate-100 text-slate-650  border-slate-200',
 }
 
 const labels = {
   in_progress: 'In Progress',
+  draft:       'Draft',
 }
 
 export default function Badge({ status }) {

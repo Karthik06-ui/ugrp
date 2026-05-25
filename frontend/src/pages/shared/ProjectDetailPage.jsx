@@ -5,7 +5,7 @@ import {
   ArrowLeft, Calendar, User, MessageSquare,
   LogIn, Clock, CheckCircle2, XCircle, RefreshCw,
   Building2, BookOpen, AlertCircle, Send,
-  Paperclip, ExternalLink
+  Paperclip, ExternalLink, Users, Mail, GraduationCap
 } from 'lucide-react'
 import { getProject } from '../../api/projects'
 import { submitProposal, getStudentProposals } from '../../api/proposals'
@@ -37,6 +37,31 @@ function TypeTag({ type }) {
 }
 
 function ProposalStatusBanner({ proposal, onReApply }) {
+  if (proposal.is_draft) {
+    return (
+      <div className="flex items-start gap-3.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl px-5 py-4 shadow-sm w-full">
+        <Clock size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <p className="text-sm font-bold text-amber-800">Draft Application Saved</p>
+          <p className="text-xs text-amber-600 mt-1 leading-relaxed">
+            You have a saved draft for this project. The mentor cannot see or review it until you submit.
+          </p>
+          <div className="flex items-center gap-4 mt-3">
+            <button onClick={onReApply}
+              className="inline-flex items-center gap-1 text-xs text-amber-700 font-semibold
+                         underline underline-offset-2 hover:text-amber-900 transition-colors">
+              Resume / Edit Draft →
+            </button>
+            <Link to="/student/proposals"
+              className="inline-flex items-center gap-1 text-xs text-slate-500 font-semibold
+                         underline underline-offset-2 hover:text-slate-700 transition-colors">
+              View in my proposals
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
   if (proposal.status === 'pending') {
     return (
       <div className="flex items-start gap-3.5 bg-amber-50/80 border border-amber-200/60 rounded-2xl px-5 py-4 shadow-sm">
@@ -50,7 +75,7 @@ function ProposalStatusBanner({ proposal, onReApply }) {
           <Link to="/student/proposals"
             className="inline-flex items-center gap-1 text-xs text-amber-700 font-semibold
                        underline underline-offset-2 hover:text-amber-900 mt-2 transition-colors">
-            View in my proposals â†’
+            View in my proposals →
           </Link>
         </div>
       </div>
@@ -115,7 +140,7 @@ export default function ProjectDetailPage() {
   const canApply =
     isStudent &&
     project?.status === 'open' &&
-    (!existingProposal || existingProposal.status === 'rejected')
+    (!existingProposal || existingProposal.status === 'rejected' || existingProposal.is_draft)
 
   const { data: remarks = [] } = useQuery({
     queryKey: ['remarks', id],
@@ -149,6 +174,17 @@ export default function ProjectDetailPage() {
   if (isLoading) return <PageSpinner />
   if (!project)  return <div className="p-6 text-slate-500">Project not found.</div>
 
+  const enrollments = project.enrollments || []
+  const isProjectMentor = isMentor && String(project.mentor) === String(user?.user_id)
+  const isEnrolledStudent = isStudent && enrollments.some(e => 
+    String(e.student) === String(user?.user_id) || 
+    e.member_roles?.some(m => m.email?.toLowerCase().trim() === user?.email?.toLowerCase().trim())
+  )
+  const canSeeTeam = isProjectMentor || isEnrolledStudent
+
+  const teamEnrollment = enrollments.find(e => e.is_team)
+  const individualEnrollments = enrollments.filter(e => !e.is_team)
+
   const isIndustry = project.project_type === 'industry'
   const isExpired  = project.deadline && new Date(project.deadline) < new Date()
 
@@ -160,7 +196,7 @@ export default function ProjectDetailPage() {
           <ArrowLeft size={14} /> Back to projects
         </Link>
 
-        {/* â”€â”€ Project header card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ────────────────────────────────────────────────────────────────────────── */}
         <div className="card p-8 mb-6 bg-white/80 border-slate-100 shadow-lg">
 
           {/* Type + Status tags */}
@@ -231,7 +267,7 @@ export default function ProjectDetailPage() {
             </div>
           )}
 
-          {/* â”€â”€ CTA section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ────────────────────────────────────────────────────────────────────────── */}
           <div className="mt-6 pt-5 border-t border-slate-100/80 space-y-4">
 
             {/* Not logged in */}
@@ -245,15 +281,12 @@ export default function ProjectDetailPage() {
               </div>
             )}
 
-            {/* Student â€” proposal status or apply button */}
+            {/* Student — proposal status or apply button */}
             {isStudent && project.status === 'open' && (
-              existingProposal && existingProposal.status !== 'rejected'
+              existingProposal && existingProposal.status !== 'accepted'
                 ? <ProposalStatusBanner proposal={existingProposal} onReApply={() => setApplyOpen(true)} />
                 : (
                   <div className="flex flex-col gap-4">
-                    {existingProposal?.status === 'rejected' && (
-                      <ProposalStatusBanner proposal={existingProposal} onReApply={() => setApplyOpen(true)} />
-                    )}
                     {canApply && !existingProposal && (
                       <button onClick={() => setApplyOpen(true)} className="btn-primary w-fit shadow-md shadow-slate-900/10">
                         Apply to this project
@@ -271,7 +304,7 @@ export default function ProjectDetailPage() {
             )}
 
             {/* Mentor owns this project */}
-            {isMentor && project.mentor === user?.user_id && (
+            {isMentor && isProjectMentor && (
               <Link to="/mentor/projects" className="btn-secondary text-xs font-bold w-fit shadow-sm">
                 Manage in My Projects
               </Link>
@@ -279,7 +312,120 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        {/* â”€â”€ Remarks section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Enrolled Team/Students Section ──────────────────────────────────────── */}
+        {isLoggedIn && canSeeTeam && enrollments.length > 0 && (
+          <div className="card p-8 mb-6 bg-white/80 border-slate-100 shadow-lg animate-fade-in-up">
+            {teamEnrollment ? (
+              <>
+                <h2 className="text-lg font-bold text-slate-950 mb-6 flex items-center gap-2 border-b border-slate-100 pb-3">
+                  <Users size={20} className="text-indigo-500" />
+                  <span>Project Team ({teamEnrollment.team_name})</span>
+                </h2>
+                <div className="space-y-4">
+                  {/* Team Lead */}
+                  <div className="flex items-start justify-between bg-slate-50/50 p-4.5 rounded-[20px] border border-slate-100/60 flex-wrap gap-4">
+                    <div className="flex gap-3.5 items-start">
+                      <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shadow-inner mt-0.5">
+                        {teamEnrollment.team_leader_name?.[0]?.toUpperCase() || 'L'}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-extrabold text-slate-800">{teamEnrollment.team_leader_name || 'Team Lead'}</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-brand-600 text-white uppercase tracking-wide">
+                            Team Lead
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                          <span>Roll No: {teamEnrollment.team_leader_roll_number || 'N/A'}</span>
+                          <span className="w-1 h-1 rounded-full bg-slate-355" />
+                          <span>Dept: {teamEnrollment.team_leader_department || 'N/A'}</span>
+                        </p>
+                        <a href={`mailto:${teamEnrollment.team_leader_email}`} className="text-xs text-indigo-650 font-semibold hover:underline mt-2 inline-flex items-center gap-1.5">
+                          <Mail size={12} className="text-indigo-400" /> {teamEnrollment.team_leader_email}
+                        </a>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                      Registered & Linked
+                    </span>
+                  </div>
+
+                  {/* Team Members */}
+                  {teamEnrollment.member_roles?.map((member, idx) => (
+                    <div key={idx} className="flex items-start justify-between bg-slate-50/20 p-4.5 rounded-[20px] border border-slate-100/40 flex-wrap gap-4">
+                      <div className="flex gap-3.5 items-start">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm shadow-inner mt-0.5">
+                          {member.name?.[0]?.toUpperCase() || 'M'}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-slate-700">{member.name || 'Unnamed Member'}</span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-bold bg-indigo-50 border border-indigo-100 text-indigo-700 uppercase tracking-wide">
+                              {member.role_label || member.role}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span>Roll No: {member.roll_number || 'N/A'}</span>
+                            <span className="w-1 h-1 rounded-full bg-slate-355" />
+                            <span>Dept: {member.department || 'N/A'}</span>
+                          </p>
+                          <a href={`mailto:${member.email}`} className="text-xs text-indigo-650 font-semibold hover:underline mt-2 inline-flex items-center gap-1.5">
+                            <Mail size={12} className="text-indigo-400" /> {member.email}
+                          </a>
+                        </div>
+                      </div>
+                      <div>
+                        {member.joined ? (
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                            Registered & Linked
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-lg">
+                            Awaiting Signup
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-bold text-slate-950 mb-6 flex items-center gap-2 border-b border-slate-100 pb-3">
+                  <Users size={20} className="text-indigo-500" />
+                  <span>Enrolled Students</span>
+                </h2>
+                <div className="space-y-4">
+                  {individualEnrollments.map((e, idx) => (
+                    <div key={idx} className="flex items-start justify-between bg-slate-50/50 p-4.5 rounded-[20px] border border-slate-100/60 flex-wrap gap-4">
+                      <div className="flex gap-3.5 items-start">
+                        <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shadow-inner mt-0.5">
+                          {e.student_name?.[0]?.toUpperCase() || 'S'}
+                        </div>
+                        <div>
+                          <span className="text-sm font-extrabold text-slate-800">{e.student_name || 'Enrolled Student'}</span>
+                          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span>Roll No: {e.student_roll_number || 'N/A'}</span>
+                            <span className="w-1 h-1 rounded-full bg-slate-355" />
+                            <span>Dept: {e.student_department || 'N/A'}</span>
+                          </p>
+                          <a href={`mailto:${e.student_email}`} className="text-xs text-indigo-650 font-semibold hover:underline mt-2 inline-flex items-center gap-1.5">
+                            <Mail size={12} className="text-indigo-400" /> {e.student_email}
+                          </a>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                        Enrolled
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ────────────────────────────────────────────────────────────────────────── */}
         {isLoggedIn ? (
           <div className="card p-8 bg-white/80 border-slate-100 shadow-lg">
             <h2 className="text-lg font-bold text-slate-950 mb-6 flex items-center gap-2">
@@ -321,7 +467,7 @@ export default function ProjectDetailPage() {
 
             <div className="flex gap-2.5">
               <input value={remark} onChange={e => setRemark(e.target.value)}
-                className="input flex-1 bg-white border-slate-200 shadow-inner" placeholder="Write a team remark or progress updateâ€¦"
+                className="input flex-1 bg-white border-slate-200 shadow-inner" placeholder="Write a team remark or progress update…"
                 onKeyDown={e => { if (e.key === 'Enter' && remark.trim() && !remarkMut.isPending) remarkMut.mutate({ project: id, content: remark }) }}
               />
               <button
@@ -346,11 +492,12 @@ export default function ProjectDetailPage() {
         )}
       </div>
 
-      {/* â”€â”€ Apply modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ────────────────────────────────────────────────────────────────────────── */}
       <Modal open={applyOpen} onClose={() => setApplyOpen(false)}
-        title={`Apply to: ${project.title}`} size="lg">
+        title={existingProposal?.is_draft ? `Edit Draft Application: ${project.title}` : `Apply to: ${project.title}`} size="lg">
         <ProposalForm
           projectId={project.id}
+          proposal={existingProposal?.is_draft ? existingProposal : null}
           onSubmit={d => proposalMut.mutate(d)}
           loading={proposalMut.isPending}
         />

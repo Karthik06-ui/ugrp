@@ -35,26 +35,27 @@ class SubmitProposalView(generics.CreateAPIView):
 class StudentProposalListView(generics.ListAPIView):
     """
     GET /api/proposals/list/
-    Students only — list ALL their own proposals across all projects.
+    Students only — list ALL their own proposals (including those where they are team members).
     Optional filter: ?status=pending|accepted|rejected
     """
     serializer_class   = ProposalCreateSerializer
     permission_classes = [IsAuthenticated, IsStudent]
 
     def get_queryset(self):
+        user = self.request.user
+        from django.db.models import Q
         qs = (
             Proposal.objects
-            .filter(student=self.request.user)
-            .select_related('project', 'project__mentor')
+            .filter(Q(student=user) | Q(team__members__user=user) | Q(team__members__email__iexact=user.email))
+            .select_related('student', 'project', 'project__mentor', 'team')
+            .prefetch_related('team__members')
+            .distinct()
             .order_by('-created_at')
         )
         status_filter = self.request.query_params.get('status')
         if status_filter:
             qs = qs.filter(status=status_filter)
         return qs
-
-    def get_serializer_class(self):
-        return ProposalCreateSerializer
 
 
 class MentorProposalListView(generics.ListAPIView):
@@ -70,7 +71,8 @@ class MentorProposalListView(generics.ListAPIView):
         qs = (
             Proposal.objects
             .filter(project__mentor=self.request.user)
-            .select_related('student', 'student__student_profile', 'project')
+            .select_related('student', 'student__student_profile', 'project', 'team')
+            .prefetch_related('team__members')
         )
         project_id      = self.request.query_params.get('project')
         proposal_status = self.request.query_params.get('status')
@@ -81,43 +83,85 @@ class MentorProposalListView(generics.ListAPIView):
         return qs
 
 
-class ProposalStatusUpdateView(generics.UpdateAPIView):
+class ProposalDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    PATCH /api/proposals/<id>/
-    Mentors only — accept or reject a pending proposal.
-    On acceptance, Enrollment is created atomically.
+    GET /api/proposals/<id>/ — view proposal details (mentor, lead, or team members).
+    PATCH/PUT /api/proposals/<id>/ — update draft/finalize (lead) OR accept/reject (mentor).
+    DELETE /api/proposals/<id>/ — delete draft proposal (lead).
     """
-    serializer_class   = ProposalStatusUpdateSerializer
-    permission_classes = [IsAuthenticated, IsMentor]
-    http_method_names  = ['patch']
+    queryset = Proposal.objects.all()
 
-    def get_queryset(self):
-        return Proposal.objects.filter(
-            project__mentor=self.request.user
-        ).select_related('project', 'student')
+    def get_permissions(self):
+        from .permissions import IsTeamLeadOrIndividual, IsProposalParticipant
+        if self.request.method == 'GET':
+            return [IsAuthenticated(), IsProposalParticipant()]
+        elif self.request.method in ['PUT', 'PATCH']:
+            # Either the team lead or the project mentor can update the proposal
+            return [IsAuthenticated(), IsTeamLeadOrIndividual() | IsMentor()]
+        elif self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsTeamLeadOrIndividual()]
+        return [IsAuthenticated()]
 
-    def get_object(self):
-        obj = super().get_object()
-        if obj.project.mentor != self.request.user:
-            raise PermissionDenied('You can only manage proposals for your own projects.')
-        return obj
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH'] and self.request.user.role == 'mentor':
+            return ProposalStatusUpdateSerializer
+        return ProposalCreateSerializer
 
     @transaction.atomic
-    def patch(self, request, *args, **kwargs):
-        proposal   = self.get_object()
-        serializer = self.get_serializer(proposal, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        updated    = serializer.save()
+    def perform_update(self, serializer):
+        user = self.request.user
+        proposal = self.get_object()
 
-        response_data = dict(serializer.data)
+        if user.role == 'mentor':
+            if proposal.project.mentor != user:
+                raise PermissionDenied('You can only manage proposals for your own projects.')
+            
+            updated = serializer.save()
 
-        if updated.status == Proposal.Status.ACCEPTED:
-            from enrollments.models import Enrollment
-            enrollment, created = Enrollment.objects.get_or_create(
-                student = updated.student,
-                project = updated.project,
-            )
-            response_data['enrollment_id']      = enrollment.id
-            response_data['enrollment_created'] = created
+            if updated.status == Proposal.Status.ACCEPTED:
+                from enrollments.models import Enrollment
+                # Enroll lead
+                enrollment, created = Enrollment.objects.get_or_create(
+                    student = updated.student,
+                    project = updated.project,
+                )
+                
+                # Enroll all team members who have registered user profiles
+                if updated.application_type == 'team' and updated.team:
+                    for member in updated.team.members.all():
+                        if member.user:
+                            Enrollment.objects.get_or_create(
+                                student = member.user,
+                                project = updated.project
+                            )
+                
+                # Emit status change signal
+                from proposals.signals import proposal_status_changed
+                proposal_status_changed.send(
+                    sender=Proposal,
+                    proposal=updated,
+                    old_status=Proposal.Status.PENDING,
+                    new_status=updated.status
+                )
+        else:
+            if proposal.student != user:
+                raise PermissionDenied('Only the team lead/individual applicant can edit this proposal.')
+            if proposal.status != Proposal.Status.PENDING and not proposal.is_draft:
+                raise ValidationError('You cannot edit a proposal that is not a draft.')
+            
+            serializer.save()
 
-        return Response(response_data, status=status.HTTP_200_OK)
+    def perform_destroy(self, instance):
+        if instance.student != self.request.user:
+            raise PermissionDenied('Only the team lead/individual applicant can delete this proposal.')
+        if not instance.is_draft:
+            raise ValidationError('Only draft proposals can be deleted.')
+        
+        # If team application, also delete the associated Team object
+        if instance.application_type == 'team' and instance.team:
+            team = instance.team
+            instance.team = None
+            instance.save()
+            team.delete()
+            
+        instance.delete()

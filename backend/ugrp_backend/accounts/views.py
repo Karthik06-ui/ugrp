@@ -108,3 +108,32 @@ class MentorProfileDetailView(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
+
+
+class StudentInfoView(APIView):
+    """
+    GET /api/auth/student-info/?email=...
+    Retrieves student info (name, roll_number, department) by normalized email.
+    Used for email blur auto-fetch during team registration.
+    """
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        email = request.query_params.get('email', '').strip().lower()
+        if not email:
+            return Response({'error': 'Email parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        try:
+            user = User.objects.get(email__iexact=email, role=User.Role.STUDENT)
+            profile = user.student_profile
+            return Response({
+                'id': user.id,
+                'name': profile.name,
+                'roll_number': profile.roll_number,
+                'department': profile.department,
+                'email': user.email
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)

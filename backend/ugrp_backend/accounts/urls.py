@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import RegisterView, LoginView, StudentProfileDetailView, MentorProfileDetailView
+from .views import RegisterView, LoginView, StudentProfileDetailView, MentorProfileDetailView, StudentInfoView
 
 urlpatterns = [
     # ── Auth ──────────────────────────────────────────────────────────────────
     path('register/', RegisterView.as_view(),  name='auth-register'),
     path('login/',    LoginView.as_view(),     name='auth-login'),
+    path('student-info/', StudentInfoView.as_view(), name='student-info'),
 
     # ── Profiles (each user sees only their own) ──────────────────────────────
     path('profile/student/', StudentProfileDetailView.as_view(), name='student-profile'),
