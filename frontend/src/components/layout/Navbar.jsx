@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LogOut,
   User,
@@ -21,7 +21,7 @@ const publicLinks = [
     label: 'About',
     children: [
       { to: '/about', label: 'About KREST' },
-      { to: '/people', label: 'People' },
+      // { to: '/people', label: 'People' },
       { to: '/process', label: 'The KREST Journey' },
     ],
   },
@@ -60,6 +60,8 @@ const publicLinks = [
 
 export default function Navbar({ onMenuToggle, menuOpen, variant }) {
   const { user, isLoggedIn, isStudent, logout } = useAuth()
+  const location = useLocation()
+  const isHomePage = location.pathname === '/' || location.pathname === '/programs/krip'
 
   const navigate = useNavigate()
 
@@ -203,10 +205,13 @@ return (
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? '#E8EFF4' : 'transparent',
+        backgroundColor: scrolled 
+          ? '#E8EFF4' 
+          : '',
         borderBottom: scrolled
           ? '1px solid #D0D8E0'
-          : '1px solid transparent',
+          : '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: scrolled ? 'none' : 'blur(8px)',
       }}
     >
       <div className="h-20 flex items-center justify-between px-8 md:px-14">
@@ -221,7 +226,11 @@ return (
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: '32px',
               letterSpacing: '6px',
-              color: scrolled ? '#111111' : '#ffffff',
+              color: scrolled 
+                ? '#111111' 
+                : isHomePage 
+                  ? '#ffffff'
+                  : '#111111',
               transition: 'color 0.3s',
               lineHeight: 1,
             }}
@@ -237,7 +246,9 @@ return (
               textTransform: 'uppercase',
               color: scrolled
                 ? '#2E5C90'
-                : 'rgba(232,239,244,0.55)',
+                : isHomePage
+                  ? 'rgba(255, 255, 255, 0.8)'
+                  : 'rgb(0, 0, 0)',
               transition: 'color 0.3s',
             }}
           >
@@ -260,7 +271,9 @@ return (
                 className={`flex items-center gap-2 text-sm font-medium cursor-pointer ${
                   scrolled
                     ? 'text-[#2E5C90] hover:text-[#022B59]'
-                    : 'text-white/80 hover:text-white'
+                    : isHomePage
+                      ? 'text-white/80 hover:text-white transition-colors'
+                      : 'text-black/80 hover:text-black transition-colors'
                 }`}
               >
                 {item.label}
@@ -306,13 +319,21 @@ return (
             className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300"
             style={{
               backgroundColor: scrolled
-                ? '#000'
-                : 'rgba(232,239,244,0.15)',
-              color: '#E8EFF4',
+                ? '#ffffff'
+                : isHomePage
+                  ? 'transparent'
+                  : 'rgba(232,239,244,0.2)',
+              color: scrolled
+                ? '#111111'
+                : isHomePage
+                  ? '#ffffff'
+                  : '#111111',
               border: scrolled
                 ? '1.5px solid #000'
-                : '1.5px solid rgba(232,239,244,0.5)',
-              backdropFilter: scrolled ? 'none' : 'blur(8px)',
+                : isHomePage
+                  ? '1.5px solid rgba(255, 255, 255, 0.6)'
+                  : '1.5px solid rgba(232,239,244,0.6)',
+              backdropFilter: 'blur(8px)',
             }}
           >
             Explore Projects
@@ -321,14 +342,14 @@ return (
           <Link
             to={isLoggedIn ? '/profile' : '/login'}
             aria-label="Account"
-            style={iconBtnStyle(scrolled)}
+            style={iconBtnStyle(scrolled, isHomePage)}
           >
             <User size={20} />
           </Link>
 
           {/* <button
             aria-label="Search"
-            style={iconBtnStyle(scrolled)}
+            style={iconBtnStyle(scrolled, isHomePage)}
           >
             <Search size={20} />
           </button> */}
@@ -337,7 +358,7 @@ return (
           <button
             aria-label="Menu"
             onClick={() => setMobileNav(o => !o)}
-            style={iconBtnStyle(scrolled)}
+            style={iconBtnStyle(scrolled, isHomePage)}
           >
             {mobileNav ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -487,7 +508,7 @@ return (
    ICON BUTTON STYLE
 ────────────────────────────────────────────────────────────── */
 
-function iconBtnStyle(scrolled) {
+function iconBtnStyle(scrolled, isHomePage) {
   return {
     width: '36px',
     height: '36px',
@@ -500,6 +521,8 @@ function iconBtnStyle(scrolled) {
     cursor: 'pointer',
     color: scrolled
       ? '#2E5C90'
-      : 'rgba(232,239,244,0.85)',
+      : isHomePage
+        ? '#ffffff'
+        : '#000000',
   }
 }

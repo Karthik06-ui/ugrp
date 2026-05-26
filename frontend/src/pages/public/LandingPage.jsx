@@ -76,11 +76,10 @@ export default function LandingPage() {
 
 
 <h1 className="text-[clamp(3rem,7vw,7rem)] leading-[0.92] font-semibold tracking-[-0.06em]">
-  Every question is a beginning.
+  Every <span className="text-cyan-400 text-[clamp(1.8rem,4vw,4rem)">QUESTION</span> is a beginning.
   <br />
 
-  <span className="text-cyan-400 text-[clamp(1.8rem,4vw,4rem)]">
-    KREST is where it becomes research.
+<span className="text-cyan-400 tracking-[0.02em] text-[clamp(1.2rem,2.5vw,2.8rem)]">    KREST is where it becomes research.
   </span>
 </h1>
 
