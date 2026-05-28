@@ -71,16 +71,16 @@ const outputs = [
     title: 'Simulation Studies',
     desc: 'Analytical frameworks, simulations, and modelling environments.',
   },
-  {
-    icon: ShieldCheck,
-    title: 'Policy & Applied Research',
-    desc: 'Impact-driven recommendations, studies, and solution frameworks.',
-  },
-  {
-    icon: Layers3,
-    title: 'Creative Research',
-    desc: 'Design systems, interdisciplinary outputs, and exploratory artefacts.',
-  },
+  // {
+  //   icon: ShieldCheck,
+  //   title: 'Policy & Applied Research',
+  //   desc: 'Impact-driven recommendations, studies, and solution frameworks.',
+  // },
+  // {
+  //   icon: Layers3,
+  //   title: 'Creative Research',
+  //   desc: 'Design systems, interdisciplinary outputs, and exploratory artefacts.',
+  // },
 ]
 
 const benefits = [
@@ -98,9 +98,9 @@ const benefits = [
   },
   {
     icon: Users,
-    title: 'Faculty-Guided Mentorship',
+    title: 'Guided Mentorship',
     desc:
-      'Work directly with KREST faculty mentors through structured research guidance and milestone reviews.',
+      'Work directly with mentors through structured research guidance and milestone reviews.',
   },
   {
     icon: Rocket,
@@ -200,12 +200,12 @@ export default function KripPage() {
                 <ArrowRight size={18} />
               </Link>
 
-              <Link
+              {/* <Link
                 to="/login"
                 className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10"
               >
                 Submit Your Own Problem Statement
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
@@ -405,7 +405,7 @@ export default function KripPage() {
               <div>
 
                 <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-fuchsia-300">
-                  Faculty Mentorship
+                  Mentorship
                 </p>
 
                 <h2 className="text-[clamp(3rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.05em]">
@@ -419,7 +419,7 @@ export default function KripPage() {
 
                 <p className="text-lg leading-[2] text-slate-300">
                   Every KRIP scholar works directly with an evaluated KREST
-                  faculty mentor through a sustained research partnership built
+                   mentor through a sustained research partnership built
                   around intellectual guidance, milestone review, and scholarly
                   development.
                 </p>
@@ -532,13 +532,13 @@ export default function KripPage() {
                   <ArrowRight size={18} />
                 </Link>
 
-                <Link
+                {/* <Link
                   to="/login"
                   className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/20"
                 >
                   Submit Problem Statement
                   <Target size={18} />
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
