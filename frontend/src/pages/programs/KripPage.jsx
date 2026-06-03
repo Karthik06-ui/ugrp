@@ -53,24 +53,25 @@ const milestones = [
 const outputs = [
   {
     icon: FileText,
-    title: 'Research Papers',
-    desc: 'Scholarly articles, conference papers, and publication-ready manuscripts.',
+    title: 'Research Insights',
+    desc: 'Evidence-backed findings that reveal how systems, people, and processes interact in the real world.',
   },
   {
-    icon: Database,
-    title: 'Datasets',
-    desc: 'Experimental, computational, and structured research datasets.',
+    icon: Users,
+    title: 'Stakeholder Understanding',
+    desc: 'Meaningful perspectives gathered through engagement, observation, and field exploration.',
   },
   {
-    icon: Microscope,
-    title: 'Research Prototypes',
-    desc: 'Proof-of-concept systems, software, and technical implementations.',
+    icon: Layers3,
+    title: 'System Maps',
+    desc: 'Visual and analytical representations that uncover relationships, dependencies, and influencing factors.',
   },
   {
-    icon: FlaskConical,
-    title: 'Simulation Studies',
-    desc: 'Analytical frameworks, simulations, and modelling environments.',
+    icon: Target,
+    title: 'Future Opportunities',
+    desc: 'Research-backed directions that can inform innovation projects, advanced studies, and solution development.',
   },
+
   // {
   //   icon: ShieldCheck,
   //   title: 'Policy & Applied Research',
@@ -111,9 +112,9 @@ const benefits = [
 ]
 
 const eligibility = [
-  'Undergraduate students with strong academic performance',
+  '2029 Batch Undergraduate students with strong academic performance',
   'Interest in research and willingness to engage with complex problems',
-  'Selection through the KREST Evaluation Gate',
+  'Commitment to collaborative learning',
 ]
 
 export default function KripPage() {
@@ -124,7 +125,7 @@ export default function KripPage() {
       <section className="relative overflow-hidden border-b border-white/5 bg-[#0F172A] text-white">
 
         <div className="absolute inset-0">
-          <div className="absolute left-[-120px] top-[-100px] h-[520px] w-[520px] rounded-full bg-fuchsia-500/20 blur-[140px]" />
+          <div className="absolute left-[-120px] top-[-100px] h-[520px] w-[520px] rounded-full bg-teal-600/20 blur-[140px]" />
           <div className="absolute bottom-[-160px] right-[-120px] h-[520px] w-[520px] rounded-full bg-indigo-500/20 blur-[140px]" />
         </div>
 
@@ -150,8 +151,7 @@ export default function KripPage() {
             </h1>
 
             <p className="mt-10 max-w-4xl text-[clamp(1.05rem,1.4vw,1.5rem)] leading-[2] text-slate-300">
-              Most problems are not what they first appear to be.
-              <br />
+Discover What Lies Beneath the Obvious.              <br />
               <br />
               KRIP is a research-first internship programme where students
               investigate real-world systems, behaviours, institutions, and
@@ -186,15 +186,14 @@ export default function KripPage() {
             </div>
 
             <p className="mt-12 max-w-4xl text-lg leading-[2] text-slate-400">
-              Research starts with learning how to see.
-            </p>
+Learn to Observe. Investigate. Understand.            </p>
 
             {/* CTA */}
             <div className="mt-12 flex flex-wrap gap-5">
 
               <Link
                 to="/login"
-                className="inline-flex items-center gap-3 rounded-full bg-fuchsia-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-fuchsia-600 hover:gap-5"
+                className="inline-flex items-center gap-3 rounded-full bg-teal-600 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-fuchsia-600 hover:gap-5"
               >
                 Apply Now
                 <ArrowRight size={18} />
@@ -211,6 +210,56 @@ export default function KripPage() {
         </div>
       </section>
 
+      {/* ABOUT KRIP */}
+<section className="relative overflow-hidden bg-white py-32">
+
+  <div className="mx-auto max-w-[1600px] px-6 lg:px-16">
+
+    <div className="grid gap-20 lg:grid-cols-[0.9fr_1.1fr]">
+
+      {/* LEFT */}
+      <div>
+
+        <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
+          About KRIP
+        </p>
+
+        <h2 className="text-[clamp(3rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-slate-900">
+          Research Begins
+          <br />
+          with Curiosity.
+        </h2>
+      </div>
+
+      {/* RIGHT */}
+      <div>
+
+        <p className="text-xl leading-[2] text-slate-700">
+          The <strong>Kumaraguru Research Internship Programme (KRIP)</strong> is
+          an immersive research experience that introduces students to the
+          process of inquiry, investigation, and evidence-based understanding.
+        </p>
+
+        <p className="mt-8 text-lg leading-[2] text-slate-600">
+          Through KRIP, students explore research opportunities emerging from
+          industry, communities, institutions, public systems, and faculty-led
+          initiatives. Working in collaborative teams under expert mentorship,
+          participants engage with real-world contexts to uncover insights,
+          understand systems, and contribute to meaningful knowledge creation.
+        </p>
+
+        <p className="mt-8 text-lg leading-[2] text-slate-600">
+          More than an internship, KRIP is an opportunity to experience how
+          research shapes innovation, informs decisions, and creates pathways
+          for future impact.
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
       {/* WHY KRIP */}
       <section className="py-32">
 
@@ -218,7 +267,7 @@ export default function KripPage() {
 
           <div className="mb-20 max-w-5xl">
 
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-fuchsia-600">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
               Why KRIP
             </p>
 
@@ -247,7 +296,7 @@ export default function KripPage() {
                 >
 
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-fuchsia-50">
-                    <Icon size={28} className="text-fuchsia-600" />
+                    <Icon size={28} className="text-teal-700" />
                   </div>
 
                   <h3 className="mt-8 text-2xl font-semibold tracking-[-0.03em] text-slate-900">
@@ -271,7 +320,7 @@ export default function KripPage() {
 
           <div className="mb-20 max-w-5xl">
 
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-fuchsia-600">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
               KRIP Structure
             </p>
 
@@ -301,7 +350,7 @@ export default function KripPage() {
 
                   <div className="flex items-center justify-between">
 
-                    <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-to-br from-fuchsia-500 to-purple-500 text-2xl font-semibold text-white shadow-lg">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-to-br from-teal-600 to-emerald-600 text-2xl font-semibold text-white shadow-lg">
                       {item.number}
                     </div>
 
@@ -345,7 +394,7 @@ export default function KripPage() {
 
             <div>
 
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-fuchsia-600">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
                 Research Outcomes
               </p>
 
@@ -373,7 +422,7 @@ export default function KripPage() {
                   >
 
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-fuchsia-50">
-                      <Icon size={24} className="text-fuchsia-600" />
+                      <Icon size={24} className="text-teal-700" />
                     </div>
 
                     <h3 className="mt-6 text-2xl font-semibold tracking-[-0.03em] text-slate-900">
@@ -398,7 +447,7 @@ export default function KripPage() {
 
           <div className="relative overflow-hidden rounded-[42px] bg-[#0F172A] p-12 text-white lg:p-20">
 
-            <div className="absolute right-[-120px] top-[-120px] h-[420px] w-[420px] rounded-full bg-fuchsia-500/20 blur-[120px]" />
+            <div className="absolute right-[-120px] top-[-120px] h-[420px] w-[420px] rounded-full bg-teal-600/20 blur-[120px]" />
 
             <div className="relative z-10 grid gap-20 lg:grid-cols-[0.9fr_1.1fr]">
 
@@ -464,7 +513,7 @@ export default function KripPage() {
 
             <div>
 
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-fuchsia-600">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
                 Eligibility
               </p>
 
@@ -491,7 +540,7 @@ export default function KripPage() {
                   <div className="mt-1">
                     <CheckCircle2
                       size={22}
-                      className="text-fuchsia-600"
+                      className="text-teal-700"
                     />
                   </div>
 
@@ -503,7 +552,134 @@ export default function KripPage() {
             </div>
           </div>
 
-          {/* FINAL CTA */}
+
+        </div>
+      </section>
+{/* TIMELINE */}{/* TIMELINE */}
+<section className="border-t border-black/5 bg-white py-24">
+
+  <div className="mx-auto max-w-[1600px] px-6 lg:px-16">
+
+    <div className="mb-16 max-w-4xl">
+
+      <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
+        Timeline
+      </p>
+
+      <h2 className="text-[clamp(2.5rem,4vw,4rem)] font-semibold tracking-[-0.05em] text-slate-900">
+        KRIP 2026
+      </h2>
+
+    </div>
+
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+
+      {[
+        {
+          month: '5th June 2026',
+          title: 'Applications Open',
+        },
+        {
+          month: '10th June 2026 ',
+          title: 'Selection Process',
+        },
+        {
+          month: '15th June 2026',
+          title: 'Shortlist Announcement',
+        },
+        {
+          month: '20th June 2026',
+          title: 'Orientation and Internship Kickoff ',
+        },
+        {
+          month: '5th July 2026',
+          title: 'Research Showcase and Internship Completion',
+        },
+      ].map((item) => (
+        <div
+          key={item.title}
+          className="rounded-[24px] border border-black/5 bg-[#F8FAFC] p-6"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">
+            {item.month}
+          </p>
+
+          <h3 className="mt-3 text-lg font-medium text-slate-900">
+            {item.title}
+          </h3>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+      {/* APPLICATION PROCESS */}
+<section className="border-t border-black/5 bg-white py-32">
+
+  <div className="mx-auto max-w-[1600px] px-6 lg:px-16">
+
+    <div className="mb-20 max-w-5xl">
+
+      <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.35em] text-teal-700">
+        Application Process
+      </p>
+
+      <h2 className="text-[clamp(3rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-slate-900">
+        Your Pathway
+        <br />
+        into KRIP
+      </h2>
+
+      <p className="mt-8 text-lg leading-[2] text-slate-600">
+        A structured selection process designed to identify students who are
+        curious, committed, and ready to explore research through guided
+        inquiry and collaboration.
+      </p>
+    </div>
+
+    <div className="grid gap-8 lg:grid-cols-3">
+
+      {[
+        {
+          number: '01',
+          title: 'Submit Application',
+          desc:
+            'Complete the KRIP application form and upload your handwritten Statement of Purpose.',
+        },
+        {
+          number: '02',
+          title: 'Interaction Round',
+          desc:
+            'Participate in a short conversation with the KRIP team to share your interests, motivations, and aspirations.',
+        },
+        {
+          number: '03',
+          title: 'Selection & Onboarding',
+          desc:
+            'Selected applicants receive onboarding details and begin their KRIP research journey.',
+        },
+      ].map((item) => (
+        <div
+          key={item.title}
+          className="rounded-[32px] border border-black/5 bg-[#F8FAFC] p-10"
+        >
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-600 text-xl font-semibold text-white">
+            {item.number}
+          </div>
+
+          <h3 className="mt-8 text-2xl font-semibold tracking-[-0.03em] text-slate-900">
+            {item.title}
+          </h3>
+
+          <p className="mt-4 text-[15px] leading-8 text-slate-600">
+            {item.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+
+              {/* FINAL CTA */}
           <div className="mt-24 overflow-hidden rounded-[42px] bg-gradient-to-br from-fuchsia-600 to-purple-600 p-14 text-white shadow-[0_40px_100px_rgba(168,85,247,0.25)]">
 
             <div className="max-w-5xl">
@@ -542,8 +718,9 @@ export default function KripPage() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+
+  </div>
+</section>
     </div>
   )
 }

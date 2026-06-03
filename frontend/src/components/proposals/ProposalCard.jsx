@@ -12,7 +12,7 @@ export default function ProposalCard({ proposal, actions }) {
   return (
     <div className="group relative overflow-hidden bg-white border border-slate-100/90 rounded-[26px] p-6.5 flex flex-col gap-4.5 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(15,23,42,0.04)] hover:-translate-y-1">
       {/* Decorative background glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-2xl pointer-events-none" />
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-3 relative z-10">

@@ -46,7 +46,7 @@ export default function StudentDashboard() {
       {/* Task progress bar */}
       {tasksTotal > 0 && (
         <div className="relative overflow-hidden bg-white border border-slate-100/90 rounded-[24px] p-6.5 mb-10 shadow-[0_8px_30px_rgb(15,23,42,0.015)]">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-3xl pointer-events-none" />
           <div className="flex items-center justify-between mb-3.5">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Overall Task Completion</span>
             <span className="text-xs font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-100/50 px-3 py-1 rounded-xl">{taskPct}%</span>

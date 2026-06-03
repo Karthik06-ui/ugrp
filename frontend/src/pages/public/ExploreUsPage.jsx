@@ -51,7 +51,7 @@ const programs = [
       'Students who demonstrate research readiness through REFLECT and the Nano Research evaluation process.',
     outcome:
       'Research outputs, faculty endorsement, institutional recognition, and meaningful contribution to active research ecosystems.',
-    color: 'from-fuchsia-500 to-purple-500',
+    color: 'from-teal-600 to-emerald-600',
     icon: Microscope,
   },
 ]

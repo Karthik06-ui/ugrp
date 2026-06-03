@@ -44,7 +44,7 @@ export default function MyEnrollments() {
           {enrollments.map(e => (
             <div key={e.id} className="group relative overflow-hidden rounded-[26px] bg-white border border-slate-100/80 p-6 flex flex-col justify-between gap-4 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(15,23,42,0.04)] hover:-translate-y-1">
               {/* Decorative inner glow */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-2xl pointer-events-none" />
 
               <div className="space-y-4 relative z-10">
                 <div className="flex items-start justify-between gap-3">

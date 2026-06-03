@@ -73,7 +73,7 @@ export default function ProjectRemarks() {
 
         {/* Post remark card */}
         <div className="group relative overflow-hidden rounded-[26px] bg-white border border-slate-100/80 p-6 shadow-[0_8px_30px_rgb(15,23,42,0.015)]">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-2xl pointer-events-none" />
           
           <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 relative z-10">Post a remark</label>
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end relative z-10">
@@ -129,7 +129,7 @@ export default function ProjectRemarks() {
                 const isMentor = r.author_role === 'mentor'
                 return (
                   <div key={r.id} className="group relative overflow-hidden rounded-[24px] bg-white border border-slate-100/80 p-5.5 flex gap-4 transition-all duration-300 hover:shadow-[0_16px_36px_rgba(15,23,42,0.03)] hover:-translate-y-0.5">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-2xl pointer-events-none" />
 
                     <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-xs font-extrabold relative z-10 border ${
                       isMentor

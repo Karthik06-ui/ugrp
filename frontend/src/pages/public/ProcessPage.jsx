@@ -62,7 +62,7 @@ const stages = [
     short: 'Long-duration faculty-mentored inquiry.',
     desc:
       'Selected students engage in milestone-driven research contributing to institutional research circles.',
-    color: 'from-fuchsia-500 to-purple-500',
+    color: 'from-teal-600 to-emerald-600',
   },
   {
     number: '07',
@@ -312,7 +312,7 @@ export default function JourneyPage() {
                             key={item}
                             className="rounded-[24px] border border-black/5 bg-white p-7"
                           >
-                            <div className="mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-fuchsia-600">
+                            <div className="mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-teal-700">
                               Research Output
                             </div>
 

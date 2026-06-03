@@ -50,7 +50,7 @@ export default function MyReviews() {
         <div className="space-y-8 relative z-10">
           {/* Summary Card */}
           <div className="relative overflow-hidden bg-white border border-slate-100/90 rounded-[28px] p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_8px_30px_rgb(15,23,42,0.015)]">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-3xl pointer-events-none" />
             
             <div className="text-center md:px-6 relative z-10 flex-shrink-0">
               <p className="text-[56px] font-semibold leading-none tracking-[-0.05em] text-slate-900">{avg}</p>
@@ -85,7 +85,7 @@ export default function MyReviews() {
             <div className="space-y-4">
               {reviews.map(r => (
                 <div key={r.id} className="group relative overflow-hidden rounded-[26px] bg-white border border-slate-100/80 p-6.5 flex flex-col gap-4.5 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(15,23,42,0.04)] hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-emerald-600/5 rounded-full blur-2xl pointer-events-none" />
                   
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100/80 relative z-10">
                     <div>
