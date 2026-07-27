@@ -251,5 +251,6 @@ if 'RENDER' in os.environ:
     CORS_ALLOWED_ORIGINS = [
         os.environ.get('FRONTEND_URL', ''),
         'http://localhost:5173',
+        'https://reos-sooty.vercel.app/',
     ]
     CORS_ALLOW_ALL_ORIGINS = False
