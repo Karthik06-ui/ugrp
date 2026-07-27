@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
-from .models import Proposal
+from .models import Proposal, OwnStatement
 from projects.serializers import TeamSerializer
 
 ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
@@ -343,3 +343,40 @@ class ProposalStatusUpdateSerializer(serializers.ModelSerializer):
                 f'This proposal is already "{self.instance.status}" and cannot be changed.'
             )
         return attrs
+
+
+class OwnStatementSerializer(serializers.ModelSerializer):
+    detailed_document_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = OwnStatement
+        fields = (
+            'id', 'roll_no', 'name', 'dept', 'phone_number',
+            'email', 'statement', 'description', 'detailed_document',
+            'detailed_document_url', 'created_at'
+        )
+        read_only_fields = ('id', 'created_at', 'detailed_document_url')
+
+    def get_detailed_document_url(self, obj):
+        if obj.detailed_document:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.detailed_document.url) if request else obj.detailed_document.url
+        return None
+
+    def validate_detailed_document(self, file):
+        if not file:
+            return file
+        
+        # Max file size 20 MB
+        MAX_SIZE = 20 * 1024 * 1024
+        if file.size > MAX_SIZE:
+            raise serializers.ValidationError("Document size exceeds the 20 MB limit.")
+
+        # Allowed extensions
+        allowed_extensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'zip']
+        ext = file.name.split('.')[-1].lower() if '.' in file.name else ''
+        if ext not in allowed_extensions:
+            raise serializers.ValidationError(
+                f"Unsupported file format. Allowed formats: {', '.join(allowed_extensions)}"
+            )
+        return file

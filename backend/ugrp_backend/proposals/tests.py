@@ -1,7 +1,9 @@
 from django.test import TestCase, RequestFactory
+from django.urls import reverse
+from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from projects.models import Project, Team, TeamMember
-from proposals.models import Proposal
+from proposals.models import Proposal, OwnStatement
 from enrollments.models import Enrollment
 from proposals.serializers import ProposalCreateSerializer
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -213,3 +215,45 @@ class ProposalWorkflowTests(TestCase):
 
         # 3. Newbie is automatically enrolled
         self.assertTrue(Enrollment.objects.filter(student=newbie_user, project=self.project).exists())
+
+
+class OwnStatementAPITest(APITestCase):
+    def test_submit_own_statement_success(self):
+        url = reverse('own-statement-submit')
+        doc = SimpleUploadedFile("brief.pdf", b"pdf_data", content_type="application/pdf")
+        data = {
+            'roll_no': '22BEC001',
+            'name': 'Karthik S',
+            'dept': 'ECE',
+            'phone_number': '+91 9876543210',
+            'email': 'karthik@kct.ac.in',
+            'statement': 'Assistive Tech for DHH',
+            'description': 'IoT-based communication aid for students.',
+            'detailed_document': doc
+        }
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(OwnStatement.objects.count(), 1)
+        statement = OwnStatement.objects.first()
+        self.assertEqual(statement.roll_no, '22BEC001')
+        self.assertEqual(statement.name, 'Karthik S')
+        self.assertEqual(statement.email, 'karthik@kct.ac.in')
+        self.assertTrue('brief' in statement.detailed_document.name)
+        self.assertTrue(statement.detailed_document.name.endswith('.pdf'))
+
+    def test_submit_own_statement_invalid_file(self):
+        url = reverse('own-statement-submit')
+        doc = SimpleUploadedFile("malicious.exe", b"binary_data", content_type="application/octet-stream")
+        data = {
+            'roll_no': '22BEC001',
+            'name': 'Karthik S',
+            'dept': 'ECE',
+            'phone_number': '+91 9876543210',
+            'email': 'karthik@kct.ac.in',
+            'statement': 'Assistive Tech for DHH',
+            'description': 'IoT-based communication aid for students.',
+            'detailed_document': doc
+        }
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('detailed_document', response.data)

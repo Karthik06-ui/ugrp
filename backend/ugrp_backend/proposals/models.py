@@ -96,3 +96,35 @@ class Proposal(models.Model):
             f'Proposal #{self.pk} | {self.student.email} → '
             f'"{self.project.title}" [{self.status}]'
         )
+
+
+def own_statement_upload_path(instance, filename):
+    import re
+    # Clean email for directory name
+    safe_email = re.sub(r'[^a-zA-Z0-9]', '_', instance.email)
+    return f'own_statements/{safe_email}/{filename}'
+
+
+class OwnStatement(models.Model):
+    roll_no           = models.CharField(max_length=50, help_text="Roll number.")
+    name              = models.CharField(max_length=150, help_text="Full name.")
+    dept              = models.CharField(max_length=150, help_text="Department.")
+    phone_number      = models.CharField(max_length=20, help_text="Phone number.")
+    email             = models.EmailField(help_text="Email address.")
+    statement         = models.CharField(max_length=255, help_text="Research Statement.")
+    description       = models.TextField(help_text="Detailed description.")
+    detailed_document = models.FileField(
+        upload_to=own_statement_upload_path,
+        null=True, blank=True,
+        help_text="Detailed specification document (PDF/DOC/ZIP, max 20 MB)."
+    )
+    created_at        = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'own_statements'
+        ordering = ['-created_at']
+        verbose_name = 'Own Statement'
+        verbose_name_plural = 'Own Statements'
+
+    def __str__(self):
+        return f'{self.name} — {self.statement}'

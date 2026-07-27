@@ -1,15 +1,16 @@
 from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from accounts.permissions import IsStudent, IsMentor
-from .models import Proposal
+from .models import Proposal, OwnStatement
 from .serializers import (
     ProposalCreateSerializer,
     ProposalListSerializer,
     ProposalStatusUpdateSerializer,
+    OwnStatementSerializer,
 )
 
 
@@ -165,3 +166,13 @@ class ProposalDetailView(generics.RetrieveUpdateDestroyAPIView):
             team.delete()
             
         instance.delete()
+
+
+class SubmitOwnStatementView(generics.CreateAPIView):
+    """
+    POST /api/proposals/own-statements/
+    Allows anyone to submit a project statement idea.
+    """
+    queryset           = OwnStatement.objects.all()
+    serializer_class   = OwnStatementSerializer
+    permission_classes = [AllowAny]

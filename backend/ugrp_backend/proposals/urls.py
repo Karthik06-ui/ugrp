@@ -1,11 +1,20 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import StudentProposalListView, SubmitProposalView, MentorProposalListView, ProposalDetailView
+from .views import (
+    StudentProposalListView,
+    SubmitProposalView,
+    MentorProposalListView,
+    ProposalDetailView,
+    SubmitOwnStatementView,
+)
 
 urlpatterns = [
     # Student: submit a new proposal
     path('proposals/',              SubmitProposalView.as_view(),       name='proposal-submit'),
+ 
+    # Submit custom own statement
+    path('proposals/own-statements/', SubmitOwnStatementView.as_view(), name='own-statement-submit'),
  
     # Student: list ALL their own proposals (filterable by status)
     path('proposals/list/',         StudentProposalListView.as_view(),  name='student-proposals-list'),
