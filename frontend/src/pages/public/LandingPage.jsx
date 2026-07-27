@@ -115,6 +115,13 @@ export default function LandingPage() {
               )}
 
               <Link
+                to="/own-statement"
+                className="inline-flex items-center gap-2 border border-cyan-400 text-cyan-400 px-6 py-3 font-medium hover:bg-cyan-400/10 transition"
+              >
+                Start with your own statement
+              </Link>
+
+              <Link
                 to="/about"
                 className="border border-white/20 px-6 py-3 hover:bg-white/5 transition"
               >
@@ -253,6 +260,13 @@ export default function LandingPage() {
               className="bg-white text-black px-8 py-4 font-medium hover:bg-cyan-300 transition"
             >
               Join KREST
+            </Link>
+
+            <Link
+              to="/own-statement"
+              className="border border-cyan-400 text-cyan-400 px-8 py-4 font-medium hover:bg-cyan-400/10 transition"
+            >
+              Start with your own statement
             </Link>
 
             <Link

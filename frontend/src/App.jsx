@@ -23,6 +23,7 @@ import BlogsPage     from './pages/public/BlogsPage'
 import BlogDetailPage from './pages/public/BlogDetailPage'
 import ContactPage   from './pages/public/ContactPage'
 import StudentsFacultyPage   from './pages/public/StudentsFacultyPage'
+import OwnStatementPage from './pages/public/OwnStatementPage'
 import ReflectPage from './pages/programs/ReflectPage'
 import CorePage from './pages/programs/CorePage'
 import KripPage from './pages/programs/KripPage'
@@ -115,6 +116,7 @@ export default function App() {
         <Route path="/programs/reflect" element={<ReflectPage />} />
         <Route path="/programs/core" element={<CorePage />} />
         <Route path="/programs/krip" element={<KripPage />} />
+        <Route path="/own-statement" element={<OwnStatementPage />} />
         <Route path="/students-faculty" element={<StudentsFacultyPage />} />
       </Route>
 

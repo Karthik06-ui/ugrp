@@ -249,7 +249,7 @@ if 'RENDER' in os.environ:
 
     # CORS — allow your Vercel frontend and local dev
     CORS_ALLOWED_ORIGINS = [
-        os.environ.get('FRONTEND_URL', ''),
+        os.environ.get('FRONTEND_URL', '').rstrip('/'),
         'http://localhost:5173',
         'https://reos-sooty.vercel.app/',
     ]

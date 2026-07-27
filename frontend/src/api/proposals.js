@@ -48,3 +48,20 @@ export function submitProposal(data) {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+
+export function submitOwnStatement(data) {
+  const form = new FormData()
+  form.append('roll_no', data.roll_no)
+  form.append('name', data.name)
+  form.append('dept', data.dept)
+  form.append('phone_number', data.phone_number)
+  form.append('email', data.email)
+  form.append('statement', data.statement)
+  form.append('description', data.description)
+  if (data.detailed_document) {
+    form.append('detailed_document', data.detailed_document)
+  }
+  return api.post('/proposals/own-statements/', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
