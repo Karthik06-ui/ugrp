@@ -247,8 +247,9 @@ if 'RENDER' in os.environ:
         },
     }
 
-    # CORS — allow your Vercel frontend
+    # CORS — allow your Vercel frontend and local dev
     CORS_ALLOWED_ORIGINS = [
         os.environ.get('FRONTEND_URL', ''),
+        'http://localhost:5173',
     ]
     CORS_ALLOW_ALL_ORIGINS = False
